@@ -1,0 +1,52 @@
+.addForm {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 300px; /* Sidebar width */
+    height: 100vh; /* Full height of the viewport */
+    background: #222;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 1rem;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+.addForm h2 {
+    margin: 0;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.addForm ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.addForm li {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.addForm .closeButton {
+    margin-top: auto; /* Push the button to the bottom */
+    background: red;
+    width: 100%;
+    height: 2.5rem;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.addForm .closeButton:hover {
+    background: #ff4444;
+}

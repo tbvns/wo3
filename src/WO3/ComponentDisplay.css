@@ -1,0 +1,32 @@
+.componentDisplay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: 25px;
+    background: #333;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.componentDisplay:hover {
+    background: #444;
+    transform: scale(1.05);
+}
+
+.preview {
+    margin-bottom: 0.5rem;
+    width: 100%;
+    height: 100px;
+    background: #7c7c7c;
+    border-radius: 25px 25px 0 0;
+    overflow: hidden;
+}
+
+.name {
+    font-size: 1rem;
+    color: white;
+    text-align: center;
+}
