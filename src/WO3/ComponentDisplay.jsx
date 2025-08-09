@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom"; // Import ReactDOM for portals
+import ReactDOM from "react-dom";
 import "./ComponentDisplay.css";
 
 export default function ComponentDisplay({ preview, name, onClick }) {
@@ -11,15 +11,16 @@ export default function ComponentDisplay({ preview, name, onClick }) {
             const iframeDocument = iframeRef.current.contentDocument;
             const iframeBody = iframeDocument.body;
 
-            // Apply basic styles to the iframe body
+            // Apply styles to the iframe body
             iframeBody.style.margin = "0";
             iframeBody.style.padding = "0";
             iframeBody.style.display = "flex";
             iframeBody.style.alignItems = "center";
             iframeBody.style.justifyContent = "center";
-            iframeBody.style.color = "white";
+            iframeBody.style.background = "white";
+            iframeBody.style.height = "100%";
 
-            setIframeBody(iframeBody); // Save iframe body for portal rendering
+            setIframeBody(iframeBody);
         };
 
         if (iframeRef.current) {
@@ -39,8 +40,7 @@ export default function ComponentDisplay({ preview, name, onClick }) {
                         border: "none",
                     }}
                 />
-                {iframeBody &&
-                    ReactDOM.createPortal(preview, iframeBody)} {/* Render preview inside iframe */}
+                {iframeBody && ReactDOM.createPortal(preview, iframeBody)}
             </div>
             <div className="name">{name}</div>
         </div>

@@ -28,3 +28,7 @@
 .resizable-image-wrapper:hover .resize-handle {
     opacity: 1;
 }
+
+.tiptap {
+    color: black;
+}

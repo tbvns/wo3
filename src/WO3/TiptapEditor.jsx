@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
+import React, { useState } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import Heading from "@tiptap/extension-heading";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import TextAlign from "@tiptap/extension-text-align";
-import { ResizableImage } from "./ResizableImage"; // Import our new component
+import { ResizableImage } from "./ResizableImage";
 import GapCursor from "@tiptap/extension-gapcursor";
+import ComponentInsertModal from "./ComponentInsertModal";
+import { createButtonExtension } from "./ButtonExtension";
+
+import "./TiptapEditor.css"
 
 // Custom FontSize extension
 const FontSize = TextStyle.extend({
@@ -28,23 +30,9 @@ const FontSize = TextStyle.extend({
     },
 });
 
-// Custom TextAlign that keeps pasted alignment
-const CustomTextAlign = TextAlign.extend({
-    addAttributes() {
-        return {
-            textAlign: {
-                default: "left",
-                parseHTML: (element) => element.style.textAlign || "left",
-                renderHTML: (attributes) => {
-                    if (!attributes.textAlign) return {};
-                    return { style: `text-align: ${attributes.textAlign}` };
-                },
-            },
-        };
-    },
-});
+export default function TiptapEditor() {
+    const [showComponentModal, setShowComponentModal] = useState(false);
 
-function EditorApp() {
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -52,7 +40,7 @@ function EditorApp() {
             ResizableImage.configure({
                 inline: false,
             }),
-            GapCursor, // Important for selecting block nodes
+            GapCursor,
             Placeholder.configure({
                 placeholder: "Start typing here...",
             }),
@@ -62,12 +50,20 @@ function EditorApp() {
             TextStyle,
             Color,
             FontSize,
-            // Configure TextAlign to work on our image wrapper
             TextAlign.configure({
-                types: ["heading", "paragraph", "resizableImage"],
+                types: ["heading", "paragraph", "resizableImage", "buttonComponent"],
             }),
+            createButtonExtension("button1", "Button 1", "#007bff"),
+            createButtonExtension("button2", "Button 2", "#6c757d"),
+            createButtonExtension("button3", "Button 3", "#28a745"),
         ],
+        editorProps: {
+            attributes: {
+                style: 'height: 100%; min-height: 100%; padding: 1rem; outline: none; font-size: 16px; line-height: 1.5; box-sizing: border-box;'
+            }
+        }
     });
+
     if (!editor) return null;
 
     const addImage = () => {
@@ -84,17 +80,66 @@ function EditorApp() {
         }
     };
 
+    const insertComponent = (componentType) => {
+        if (!editor) return;
+
+        editor.chain().focus().insertContent({
+            type: componentType,
+            attrs: {}
+        }).run();
+
+        setShowComponentModal(false);
+    };
+
+    const toolbarButtonStyle = {
+        background: "#f0f0f0",
+        border: "none",
+        padding: "6px 10px",
+        borderRadius: "4px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        fontSize: "14px"
+    };
+
     return (
-        <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+        <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: "white" }}>
             {/* Toolbar */}
-            <div className="toolbar" style={{ flexShrink: 0 }}>
-                <button onClick={() => editor.chain().focus().toggleBold().run()}>B</button>
-                <button onClick={() => editor.chain().focus().toggleItalic().run()}>I</button>
-                <button onClick={() => editor.chain().focus().toggleStrike().run()}>S</button>
-                <button onClick={() => editor.chain().focus().toggleBulletList().run()}>
+            <div style={{
+                flexShrink: 0,
+                display: "flex",
+                gap: "5px",
+                flexWrap: "wrap",
+                background: "#f0f0f0",
+                padding: "5px"
+            }}>
+                <button
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    style={toolbarButtonStyle}
+                >
+                    B
+                </button>
+                <button
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    style={toolbarButtonStyle}
+                >
+                    I
+                </button>
+                <button
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    style={toolbarButtonStyle}
+                >
+                    S
+                </button>
+                <button
+                    onClick={() => editor.chain().focus().toggleBulletList().run()}
+                    style={toolbarButtonStyle}
+                >
                     • List
                 </button>
-                <button onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+                <button
+                    onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                    style={toolbarButtonStyle}
+                >
                     1. List
                 </button>
                 <button
@@ -102,27 +147,52 @@ function EditorApp() {
                         const url = prompt("Enter link URL");
                         if (url) editor.chain().focus().setLink({ href: url }).run();
                     }}
+                    style={toolbarButtonStyle}
                 >
                     🔗 Link
                 </button>
-                <button onClick={addImage}>🖼 Image</button>
-                <button onClick={addHTML}>💻 HTML</button>
+                <button onClick={addImage} style={toolbarButtonStyle}>
+                    🖼 Image
+                </button>
+                <button onClick={addHTML} style={toolbarButtonStyle}>
+                    💻 HTML
+                </button>
+
+                {/* Insert Component Button */}
+                <button
+                    onClick={() => setShowComponentModal(true)}
+                    style={toolbarButtonStyle}
+                >
+                    + Insert Component
+                </button>
 
                 {/* Alignment buttons */}
-                <button onClick={() => editor.chain().focus().setTextAlign("left").run()}>
+                <button
+                    onClick={() => editor.chain().focus().setTextAlign("left").run()}
+                    style={toolbarButtonStyle}
+                >
                     ⬅
                 </button>
-                <button onClick={() => editor.chain().focus().setTextAlign("center").run()}>
+                <button
+                    onClick={() => editor.chain().focus().setTextAlign("center").run()}
+                    style={toolbarButtonStyle}
+                >
                     ⬍
                 </button>
-                <button onClick={() => editor.chain().focus().setTextAlign("right").run()}>
+                <button
+                    onClick={() => editor.chain().focus().setTextAlign("right").run()}
+                    style={toolbarButtonStyle}
+                >
                     ➡
                 </button>
-                <button onClick={() => editor.chain().focus().setTextAlign("justify").run()}>
+                <button
+                    onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+                    style={toolbarButtonStyle}
+                >
                     ☰
                 </button>
 
-                {/* Heading buttons */}
+                {/* Heading selector */}
                 <select
                     onChange={(e) => {
                         const level = parseInt(e.target.value);
@@ -132,6 +202,7 @@ function EditorApp() {
                             editor.chain().focus().toggleHeading({ level }).run();
                         }
                     }}
+                    style={toolbarButtonStyle}
                 >
                     <option value="0">Paragraph</option>
                     <option value="1">H1</option>
@@ -139,7 +210,7 @@ function EditorApp() {
                     <option value="3">H3</option>
                 </select>
 
-                {/* Custom font size input */}
+                {/* Font size input */}
                 <input
                     type="number"
                     min="8"
@@ -152,89 +223,30 @@ function EditorApp() {
                             .setMark("textStyle", { fontSize: `${e.target.value}px` })
                             .run();
                     }}
-                    style={{ width: "60px" }}
+                    style={{ ...toolbarButtonStyle, width: "60px" }}
                 />
             </div>
 
             {/* Editor content fills remaining space */}
-            <div style={{ flexGrow: 1, overflow: "auto" }}>
-                <EditorContent editor={editor} className="tiptap" />
-            </div>
-        </div>
-    );
-}
-
-export default function TiptapEditor() {
-    const iframeRef = useRef(null);
-    const [iframeReady, setIframeReady] = useState(false);
-
-    useEffect(() => {
-        if (iframeRef.current && iframeRef.current.contentDocument) {
-            const doc = iframeRef.current.contentDocument;
-            doc.open();
-            doc.write(`
-        <html>
-          <head>
-            <style>
-              html, body { margin: 0; padding: 0; height: 100%; }
-              .tiptap {
-                flex-grow: 1;
-                min-height: 100%;
-                padding: 1rem;
-                outline: none;
-                font-size: 16px;
-                line-height: 1.5;
-                box-sizing: border-box;
-              }
-              .toolbar {
-                display: flex;
-                gap: 5px;
-                flex-wrap: wrap;
-                background: #f0f0f0;
-                padding: 5px;
-              }
-              .toolbar button, .toolbar select, .toolbar input {
-                background: #f0f0f0;
-                border: none;
-                padding: 6px 10px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: bold;
-              }
-              .toolbar button:hover, .toolbar select:hover {
-                background: #ddd;
-              }
-            </style>
-          </head>
-          <body>
-            <div id="editor-root" style="height: 100%; display: flex; flex-direction: column;"></div>
-          </body>
-        </html>
-      `);
-            doc.close();
-            setIframeReady(true);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (iframeReady && iframeRef.current) {
-            const mountNode = iframeRef.current.contentDocument.getElementById("editor-root");
-            const root = createRoot(mountNode);
-            root.render(<EditorApp />);
-        }
-    }, [iframeReady]);
-
-    return (
-        <iframe
-            ref={iframeRef}
-            style={{
-                width: "100%",
-                minWidth: "900px",
-                height: "500px",
-                border: "none",
+            <div style={{
+                flexGrow: 1,
+                overflow: "auto",
                 background: "white",
-                borderRadius: "10px",
-            }}
-        />
+                height: "calc(100vh - 50px)" // Adjust based on toolbar height
+            }}>
+                <EditorContent
+                    editor={editor}
+                    style={{ height: "100%" }}
+                />
+            </div>
+
+            {/* Component Insert Modal */}
+            {showComponentModal && (
+                <ComponentInsertModal
+                    onInsert={insertComponent}
+                    onClose={() => setShowComponentModal(false)}
+                />
+            )}
+        </div>
     );
 }
