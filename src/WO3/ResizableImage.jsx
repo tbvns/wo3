@@ -31,7 +31,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
         <>
             {selected && (
                 <div
-                    contentEditable={false} // 🔹 ProseMirror ignores this
+                    contentEditable={false}
                     style={{
                         position: "fixed",
                         top: `${toolbarPos.top}px`,
@@ -54,8 +54,8 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
                         min="10"
                         max="100"
                         value={size}
-                        draggable={false} // 🔹 Prevent browser drag
-                        onDragStart={(e) => e.preventDefault()} // 🔹 Prevent drag start
+                        draggable={false}
+                        onDragStart={(e) => e.preventDefault()}
                         onChange={(e) => handleSizeChange(parseInt(e.target.value))}
                         onMouseDown={(e) => e.stopPropagation()}
                         onClick={(e) => e.stopPropagation()}
@@ -96,7 +96,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
                     title={title}
                     style={{ width }}
                     className="resizable-image"
-                    draggable={false} // 🔹 Prevent image drag
+                    draggable={false}
                     onDragStart={(e) => e.preventDefault()}
                 />
             </NodeViewWrapper>

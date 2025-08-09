@@ -13,6 +13,9 @@ import ComponentInsertModal from "./ComponentInsertModal";
 import { createButtonExtension } from "./ButtonExtension";
 
 import "./TiptapEditor.css"
+import {GoogleSearchExtension} from "./GoogleSearchExtension.jsx";
+import {TwitterPostExtension} from "./TwitterPostExtension.js";
+import {MessageExtension} from "./MessageExtension.js";
 
 // Custom FontSize extension
 const FontSize = TextStyle.extend({
@@ -53,9 +56,12 @@ export default function TiptapEditor() {
             TextAlign.configure({
                 types: ["heading", "paragraph", "resizableImage", "buttonComponent"],
             }),
-            createButtonExtension("button1", "Button 1", "#007bff"),
+            createButtonExtension("button1", "yay 1", "#007bff"),
             createButtonExtension("button2", "Button 2", "#6c757d"),
             createButtonExtension("button3", "Button 3", "#28a745"),
+            GoogleSearchExtension,
+            TwitterPostExtension,
+            MessageExtension,
         ],
         editorProps: {
             attributes: {
@@ -194,6 +200,7 @@ export default function TiptapEditor() {
 
                 {/* Heading selector */}
                 <select
+                    className="toolbar-select"
                     onChange={(e) => {
                         const level = parseInt(e.target.value);
                         if (level === 0) {
@@ -202,7 +209,6 @@ export default function TiptapEditor() {
                             editor.chain().focus().toggleHeading({ level }).run();
                         }
                     }}
-                    style={toolbarButtonStyle}
                 >
                     <option value="0">Paragraph</option>
                     <option value="1">H1</option>
