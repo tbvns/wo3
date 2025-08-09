@@ -10,6 +10,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lexical/code": "^0.34.0",
+    "@lexical/link": "^0.34.0",
+    "@lexical/list": "^0.34.0",
+    "@lexical/react": "^0.34.0",
+    "@lexical/rich-text": "^0.34.0",
+    "@tiptap/extension-color": "^3.0.9",
+    "@tiptap/extension-gapcursor": "^3.0.9",
+    "@tiptap/extension-heading": "^3.0.9",
+    "@tiptap/extension-image": "^3.0.9",
+    "@tiptap/extension-link": "^3.0.9",
+    "@tiptap/extension-placeholder": "^3.0.9",
+    "@tiptap/extension-text-align": "^3.0.9",
+    "@tiptap/extension-text-style": "^3.0.9",
+    "@tiptap/react": "^3.0.9",
+    "@tiptap/starter-kit": "^3.0.9",
+    "lexical": "^0.34.0",
+    "quill": "^2.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
