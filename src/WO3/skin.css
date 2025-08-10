@@ -1,0 +1,228 @@
+/*
+ * AO3 Work Skin CSS (flexless, gapless, object-fit-less)
+ * Paste into AO3 Work Skin. This file is also downloaded by your app.
+ */
+
+/* Common helpers */
+.text-align-left {
+    text-align: left;
+}
+.text-align-center {
+    text-align: center;
+}
+.text-align-right {
+    text-align: right;
+}
+.text-align-justify {
+    text-align: justify;
+}
+
+/* Button (inline) */
+.button-component-wrapper {
+    display: inline-block;
+    margin: 5px;
+}
+.button-component {
+    color: #fff;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.btn-primary {
+    background: #007bff;
+}
+.btn-secondary {
+    background: #6c757d;
+}
+.btn-success {
+    background: #28a745;
+}
+
+/* Wrappers (center block components without flex) */
+.google-search-wrapper,
+.twitter-post-wrapper,
+.message-wrapper {
+    margin: 16px auto;
+    max-width: 600px;
+}
+
+/* GOOGLE SEARCH */
+.google-search-component {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+    font-family: Arial, sans-serif;
+    line-height: 1.35;
+    color: #0f1419;
+}
+.google-search-bar {
+    border: 1px solid #ccc;
+    border-radius: 24px;
+    padding: 8px 16px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.google-search-bar .icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+.google-search-bar .query {
+    display: inline-block;
+    vertical-align: middle;
+    width: 85%;
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.2;
+}
+.google-search-result {
+    margin: 16px 0 20px 0;
+}
+.gs-title {
+    color: #1a0dab;
+    font-size: 18px;
+    line-height: 1.25;
+}
+.gs-url {
+    color: #006621;
+    font-size: 13px;
+    line-height: 1.25;
+    margin: 2px 0 6px 0;
+}
+.gs-description {
+    color: #545454;
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+/* TWITTER POST */
+.twitter-post-component {
+    border: 1px solid #e1e8ed;
+    border-radius: 16px;
+    padding: 12px;
+    background: #fff;
+    max-width: 550px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.35;
+    color: #0f1419;
+}
+.tp-header {
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.tp-profile-img {
+    float: left;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-size: cover;
+    background-position: center;
+}
+.tp-name-block {
+    display: block;
+    padding-top: 4px;
+}
+.tp-username {
+    font-weight: bold;
+    margin-right: 4px;
+}
+.tp-handle {
+    color: #536471;
+}
+.tp-text {
+    margin: 10px 0 8px 0;
+}
+.tp-timestamp {
+    color: #536471;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.tp-stats {
+    text-align: center;
+    color: #536471;
+    font-size: 13px;
+}
+.tp-stats > span {
+    display: inline-block;
+    margin-right: 24px;
+}
+.tp-stats > span:last-child {
+    margin-right: 0;
+}
+
+/* MESSAGE */
+.message-component {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    background: #fff;
+    font-family: Arial, sans-serif;
+    line-height: 1.3;
+    color: #0f1419;
+}
+.msg-header {
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.msg-profile-img {
+    float: left;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-size: cover;
+    background-position: center;
+}
+.msg-name {
+    display: block;
+    padding-top: 6px;
+    font-weight: bold;
+    font-size: 16px;
+}
+.msg-bubble-container {
+    text-align: left;
+    margin-bottom: 12px;
+}
+.msg-bubble-container.right {
+    text-align: right;
+}
+.msg-bubble {
+    display: inline-block;
+    max-width: 70%;
+}
+.msg-bubble-content {
+    display: block;
+    padding: 8px 12px;
+    line-height: 1.25;
+    border-radius: 18px;
+}
+.msg-bubble-content.left {
+    background: #f1f0f0;
+    color: #000;
+    border-radius: 18px 18px 18px 5px;
+}
+.msg-bubble-content.right {
+    background: #007bff;
+    color: #fff;
+    border-radius: 18px 18px 5px 18px;
+}
+
+.resizable-image-wrapper {
+    line-height: 0;
+    margin: 10px 0;
+}
+
+/* Override AO3 default margin */
+p {
+    margin: 0rem;
+}

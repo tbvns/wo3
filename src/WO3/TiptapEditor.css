@@ -2,12 +2,12 @@
     display: inline-block;
     position: relative;
     line-height: 0;
-    margin: 10px 0; /* Add some spacing around images */
+    margin: 10px 0;
 }
 
 .resizable-image-wrapper.ProseMirror-selectednode {
     outline: 2px solid #3b82f6;
-    position: relative; /* Ensure this is set for handle positioning */
+    position: relative;
 }
 
 .resize-handle {
@@ -31,4 +31,21 @@
 
 .tiptap {
     color: black;
+}
+
+/* Center block-level custom components */
+.tiptap div[data-type="google-search"],
+.tiptap div[data-type="twitter-post"],
+.tiptap div[data-type="message"] {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block !important;
+}
+
+/* Ensure the editor content can grow */
+.tiptap-editor-content {
+    min-height: 50vh;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }

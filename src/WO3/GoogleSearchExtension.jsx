@@ -1,4 +1,3 @@
-// GoogleSearchExtension.js
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 import { GoogleSearchComponent } from "./GoogleSearchComponent";
@@ -10,9 +9,7 @@ export const GoogleSearchExtension = Node.create({
 
     addAttributes() {
         return {
-            query: {
-                default: "Search something...",
-            },
+            query: { default: "Search something..." },
             results: {
                 default: [
                     {
@@ -26,13 +23,38 @@ export const GoogleSearchExtension = Node.create({
     },
 
     parseHTML() {
-        return [{ tag: "div[data-type='google-search']" }];
+        return [{ tag: "div.google-search-wrapper" }];
     },
 
-    renderHTML({ HTMLAttributes }) {
+    renderHTML({ HTMLAttributes, node }) {
+        const { query, results } = node.attrs;
+
+        const searchBar = [
+            "div",
+            { class: "google-search-bar" },
+            ["span", { class: "icon" }, "🔍"],
+            ["span", { class: "query" }, query],
+        ];
+
+        const resultElements = results.map((r) => [
+            "div",
+            { class: "google-search-result" },
+            ["div", { class: "gs-title" }, r.title],
+            ["div", { class: "gs-url" }, r.url],
+            ["div", { class: "gs-description" }, r.description],
+        ]);
+
+        const componentContent = [
+            "div",
+            { class: "google-search-component" },
+            searchBar,
+            ["div", {}, ...resultElements],
+        ];
+
         return [
             "div",
-            mergeAttributes(HTMLAttributes, { "data-type": "google-search" }),
+            mergeAttributes(HTMLAttributes, { class: "google-search-wrapper" }),
+            componentContent,
         ];
     },
 

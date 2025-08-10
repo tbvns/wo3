@@ -4,21 +4,6 @@ import ComponentDisplay from "./ComponentDisplay";
 export default function ComponentInsertModal({ onInsert, onClose }) {
     const components = [
         {
-            id: "button1",
-            name: "Button 1",
-            preview: <button>Button 1</button>
-        },
-        {
-            id: "button2",
-            name: "Button 2",
-            preview: <button>Button 2</button>
-        },
-        {
-            id: "button3",
-            name: "Button 3",
-            preview: <button>Button 3</button>
-        },
-        {
             id: "googleSearch",
             name: "Google Search",
             preview: (

@@ -80,115 +80,124 @@ export const MessageComponent = ({ node, updateAttributes }) => {
         <NodeViewWrapper
             as="div"
             style={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                padding: "16px",
-                background: "white",
-                maxWidth: "600px",
-                fontFamily: "Arial, sans-serif",
+                display: "flex",
+                justifyContent: "center",
+                margin: "16px 0",
             }}
         >
-            {/* Header */}
             <div
                 style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "16px",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    background: "white",
+                    maxWidth: "600px",
+                    width: "100%",
+                    fontFamily: "Arial, sans-serif",
                 }}
             >
-                <img
-                    src={
-                        profileImageSrc ||
-                        "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
-                    }
-                    alt="Profile"
-                    onClick={handleImageSrcChange}
-                    style={{
-                        width: "48px",
-                        height: "48px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        cursor: "pointer",
-                        marginRight: "8px",
-                    }}
-                />
+                {/* Header */}
                 <div
-                    ref={nameRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={handleNameBlur}
                     style={{
-                        fontWeight: "bold",
-                        fontSize: "16px",
-                        outline: "none",
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "16px",
                     }}
-                />
-            </div>
-
-            {/* Messages */}
-            <div>
-                {messages.map((msg, i) => (
-                    <div
-                        key={i}
+                >
+                    <img
+                        src={
+                            profileImageSrc ||
+                            "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
+                        }
+                        alt="Profile"
+                        onClick={handleImageSrcChange}
                         style={{
-                            display: "flex",
-                            justifyContent:
-                                msg.side === "left" ? "flex-start" : "flex-end",
-                            marginBottom: "12px",
+                            width: "48px",
+                            height: "48px",
+                            borderRadius: "50%",
+                            objectFit: "cover",
+                            cursor: "pointer",
+                            marginRight: "8px",
+                        }}
+                    />
+                    <div
+                        ref={nameRef}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={handleNameBlur}
+                        style={{
+                            fontWeight: "bold",
+                            fontSize: "16px",
+                            outline: "none",
+                        }}
+                    />
+                </div>
+
+                {/* Messages */}
+                <div>
+                    {messages.map((msg, i) => (
+                        <div
+                            key={i}
+                            style={{
+                                display: "flex",
+                                justifyContent:
+                                    msg.side === "left" ? "flex-start" : "flex-end",
+                                marginBottom: "12px",
+                            }}
+                        >
+                            <div style={{ position: "relative", maxWidth: "70%" }}>
+                                <div
+                                    ref={(el) => (messageRefs.current[i] = el)}
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    onBlur={() => handleMessageBlur(i)}
+                                    style={{
+                                        background:
+                                            msg.side === "left" ? "#f1f0f0" : "#007bff",
+                                        color: msg.side === "left" ? "#000" : "#fff",
+                                        padding: "8px 12px",
+                                        borderRadius:
+                                            msg.side === "left"
+                                                ? "18px 18px 18px 5px"
+                                                : "18px 18px 5px 18px",
+                                        outline: "none",
+                                        wordWrap: "break-word",
+                                    }}
+                                />
+                                <BubbleTail side={msg.side} />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+                    <button
+                        onClick={() => addMessage("left")}
+                        style={{
+                            background: "#f8f9fa",
+                            border: "1px solid #dadce0",
+                            borderRadius: "4px",
+                            padding: "6px 12px",
+                            cursor: "pointer",
+                            fontSize: "14px",
                         }}
                     >
-                        <div style={{ position: "relative", maxWidth: "70%" }}>
-                            <div
-                                ref={(el) => (messageRefs.current[i] = el)}
-                                contentEditable
-                                suppressContentEditableWarning
-                                onBlur={() => handleMessageBlur(i)}
-                                style={{
-                                    background: msg.side === "left" ? "#f1f0f0" : "#007bff",
-                                    color: msg.side === "left" ? "#000" : "#fff",
-                                    padding: "8px 12px",
-                                    borderRadius:
-                                        msg.side === "left"
-                                            ? "18px 18px 18px 5px"
-                                            : "18px 18px 5px 18px",
-                                    outline: "none",
-                                    wordWrap: "break-word",
-                                }}
-                            />
-                            <BubbleTail side={msg.side} />
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Add message buttons */}
-            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-                <button
-                    onClick={() => addMessage("left")}
-                    style={{
-                        background: "#f8f9fa",
-                        border: "1px solid #dadce0",
-                        borderRadius: "4px",
-                        padding: "6px 12px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                    }}
-                >
-                    ➕ Add Left Message
-                </button>
-                <button
-                    onClick={() => addMessage("right")}
-                    style={{
-                        background: "#f8f9fa",
-                        border: "1px solid #dadce0",
-                        borderRadius: "4px",
-                        padding: "6px 12px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                    }}
-                >
-                    ➕ Add Right Message
-                </button>
+                        ➕ Add Left Message
+                    </button>
+                    <button
+                        onClick={() => addMessage("right")}
+                        style={{
+                            background: "#f8f9fa",
+                            border: "1px solid #dadce0",
+                            borderRadius: "4px",
+                            padding: "6px 12px",
+                            cursor: "pointer",
+                            fontSize: "14px",
+                        }}
+                    >
+                        ➕ Add Right Message
+                    </button>
+                </div>
             </div>
         </NodeViewWrapper>
     );

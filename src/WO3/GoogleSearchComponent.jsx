@@ -61,101 +61,109 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
         <NodeViewWrapper
             as="div"
             style={{
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                padding: "16px",
-                background: "white",
-                maxWidth: "600px",
-                fontFamily: "Arial, sans-serif",
+                display: "flex",
+                justifyContent: "center",
+                margin: "16px 0",
             }}
         >
-            {/* Search bar */}
             <div
                 style={{
-                    display: "flex",
-                    alignItems: "center",
-                    marginBottom: "16px",
-                    border: "1px solid #ccc",
-                    borderRadius: "24px",
-                    padding: "8px 16px",
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    background: "white",
+                    maxWidth: "600px",
+                    width: "100%",
+                    fontFamily: "Arial, sans-serif",
                 }}
             >
-                <span style={{ marginRight: "8px", color: "#888" }}>🔍</span>
+                {/* Search bar */}
                 <div
-                    ref={queryRef}
-                    contentEditable
-                    suppressContentEditableWarning
-                    onBlur={handleQueryBlur}
                     style={{
-                        flex: 1,
-                        outline: "none",
-                        fontSize: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "16px",
+                        border: "1px solid #ccc",
+                        borderRadius: "24px",
+                        padding: "8px 16px",
                     }}
-                />
-            </div>
+                >
+                    <span style={{ marginRight: "8px", color: "#888" }}>🔍</span>
+                    <div
+                        ref={queryRef}
+                        contentEditable
+                        suppressContentEditableWarning
+                        onBlur={handleQueryBlur}
+                        style={{
+                            flex: 1,
+                            outline: "none",
+                            fontSize: "16px",
+                        }}
+                    />
+                </div>
 
-            {/* Results */}
-            <div>
-                {results.map((res, i) => {
-                    if (!resultRefs.current[i]) {
-                        resultRefs.current[i] = {};
-                    }
-                    return (
-                        <div
-                            key={i}
-                            style={{ marginBottom: "20px" }}
-                            onBlur={() => handleResultBlur(i)}
-                        >
+                {/* Results */}
+                <div>
+                    {results.map((res, i) => {
+                        if (!resultRefs.current[i]) {
+                            resultRefs.current[i] = {};
+                        }
+                        return (
                             <div
-                                ref={(el) => (resultRefs.current[i].title = el)}
-                                contentEditable
-                                suppressContentEditableWarning
-                                style={{
-                                    color: "#1a0dab",
-                                    fontSize: "18px",
-                                    cursor: "pointer",
-                                    outline: "none",
-                                }}
-                            />
-                            <div
-                                ref={(el) => (resultRefs.current[i].url = el)}
-                                contentEditable
-                                suppressContentEditableWarning
-                                style={{
-                                    color: "#006621",
-                                    fontSize: "14px",
-                                    outline: "none",
-                                }}
-                            />
-                            <div
-                                ref={(el) => (resultRefs.current[i].description = el)}
-                                contentEditable
-                                suppressContentEditableWarning
-                                style={{
-                                    color: "#545454",
-                                    fontSize: "14px",
-                                    outline: "none",
-                                }}
-                            />
-                        </div>
-                    );
-                })}
-            </div>
+                                key={i}
+                                style={{ marginBottom: "20px" }}
+                                onBlur={() => handleResultBlur(i)}
+                            >
+                                <div
+                                    ref={(el) => (resultRefs.current[i].title = el)}
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    style={{
+                                        color: "#1a0dab",
+                                        fontSize: "18px",
+                                        cursor: "pointer",
+                                        outline: "none",
+                                    }}
+                                />
+                                <div
+                                    ref={(el) => (resultRefs.current[i].url = el)}
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    style={{
+                                        color: "#006621",
+                                        fontSize: "14px",
+                                        outline: "none",
+                                    }}
+                                />
+                                <div
+                                    ref={(el) => (resultRefs.current[i].description = el)}
+                                    contentEditable
+                                    suppressContentEditableWarning
+                                    style={{
+                                        color: "#545454",
+                                        fontSize: "14px",
+                                        outline: "none",
+                                    }}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
 
-            {/* Add result button */}
-            <button
-                onClick={addResult}
-                style={{
-                    background: "#f8f9fa",
-                    border: "1px solid #dadce0",
-                    borderRadius: "4px",
-                    padding: "6px 12px",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                }}
-            >
-                ➕ Add Result
-            </button>
+                <button
+                    onClick={addResult}
+                    style={{
+                        background: "#f8f9fa",
+                        border: "1px solid #dadce0",
+                        borderRadius: "4px",
+                        padding: "6px 12px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                    }}
+                >
+                    ➕ Add Result
+                </button>
+            </div>
         </NodeViewWrapper>
     );
 };
