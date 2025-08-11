@@ -19,7 +19,6 @@ const BubbleTail = ({ side }) => {
                 viewBox="0 0 15 15"
                 style={{ width: "100%", height: "100%", display: "block" }}
             >
-                {/* This path creates a subtle, curved tail */}
                 <path d="M0 15 L0 0 Q10 10, 15 15 Z" fill={color} />
             </svg>
         </div>
@@ -27,7 +26,7 @@ const BubbleTail = ({ side }) => {
 };
 
 export const MessageComponent = ({ node, updateAttributes }) => {
-    const { name, profileImageSrc, messages } = node.attrs;
+    const { name, profileImageSrc, messages } = node.attrs; // ORIGINAL - No defaults!
 
     const nameRef = useRef(null);
     const messageRefs = useRef([]);
@@ -67,6 +66,13 @@ export const MessageComponent = ({ node, updateAttributes }) => {
                 },
             ],
         });
+    };
+
+    const removeMessage = (index) => {
+        const updatedMessages = messages.filter((_, i) => i !== index);
+        updateAttributes({ messages: updatedMessages });
+        // Clean up refs
+        messageRefs.current.splice(index, 1);
     };
 
     const handleImageSrcChange = () => {
@@ -143,17 +149,56 @@ export const MessageComponent = ({ node, updateAttributes }) => {
                                 justifyContent:
                                     msg.side === "left" ? "flex-start" : "flex-end",
                                 marginBottom: "12px",
+                                position: "relative",
+                            }}
+                            onMouseEnter={(e) => {
+                                const deleteBtn = e.currentTarget.querySelector(".delete-btn");
+                                if (deleteBtn) deleteBtn.style.opacity = "1";
+                            }}
+                            onMouseLeave={(e) => {
+                                const deleteBtn = e.currentTarget.querySelector(".delete-btn");
+                                if (deleteBtn) deleteBtn.style.opacity = "0";
                             }}
                         >
                             <div style={{ position: "relative", maxWidth: "70%" }}>
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => removeMessage(i)}
+                                    style={{
+                                        position: "absolute",
+                                        top: "-8px",
+                                        right: msg.side === "left" ? "-8px" : "auto",
+                                        left: msg.side === "right" ? "-8px" : "auto",
+                                        background: "#ff4444",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "50%",
+                                        width: "18px",
+                                        height: "18px",
+                                        minWidth: "18px",
+                                        minHeight: "18px",
+                                        cursor: "pointer",
+                                        fontSize: "10px",
+                                        opacity: "0",
+                                        transition: "opacity 0.2s",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        zIndex: 1,
+                                        lineHeight: "1",
+                                        padding: "0",
+                                    }}
+                                    title="Delete message"
+                                >
+                                    ×
+                                </button>
                                 <div
                                     ref={(el) => (messageRefs.current[i] = el)}
                                     contentEditable
                                     suppressContentEditableWarning
                                     onBlur={() => handleMessageBlur(i)}
                                     style={{
-                                        background:
-                                            msg.side === "left" ? "#f1f0f0" : "#007bff",
+                                        background: msg.side === "left" ? "#f1f0f0" : "#007bff",
                                         color: msg.side === "left" ? "#000" : "#fff",
                                         padding: "8px 12px",
                                         borderRadius:

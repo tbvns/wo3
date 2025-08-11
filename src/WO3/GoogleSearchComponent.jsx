@@ -1,4 +1,3 @@
-// GoogleSearchComponent.jsx
 import React, { useRef, useEffect } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
 
@@ -8,7 +7,6 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
     const queryRef = useRef(null);
     const resultRefs = useRef([]);
 
-    // Initialize content only once
     useEffect(() => {
         if (queryRef.current && queryRef.current.innerText !== query) {
             queryRef.current.innerText = query;
@@ -28,7 +26,7 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
                 }
             }
         });
-    }, []); // only run once
+    }, [query, results]);
 
     const handleQueryBlur = () => {
         updateAttributes({ query: queryRef.current.innerText });
@@ -55,6 +53,13 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
                 },
             ],
         });
+    };
+
+    const removeResult = (index) => {
+        const updatedResults = results.filter((_, i) => i !== index);
+        updateAttributes({ results: updatedResults });
+        // Clean up refs
+        resultRefs.current.splice(index, 1);
     };
 
     return (
@@ -111,9 +116,54 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
                         return (
                             <div
                                 key={i}
-                                style={{ marginBottom: "20px" }}
+                                style={{
+                                    marginBottom: "20px",
+                                    position: "relative",
+                                    border: "1px solid transparent",
+                                    borderRadius: "4px",
+                                    padding: "8px",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.border = "1px solid #ddd";
+                                    const deleteBtn = e.currentTarget.querySelector(".delete-btn");
+                                    if (deleteBtn) deleteBtn.style.opacity = "1";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.border = "1px solid transparent";
+                                    const deleteBtn = e.currentTarget.querySelector(".delete-btn");
+                                    if (deleteBtn) deleteBtn.style.opacity = "0";
+                                }}
                                 onBlur={() => handleResultBlur(i)}
                             >
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => removeResult(i)}
+                                    style={{
+                                        position: "absolute",
+                                        top: "4px",
+                                        right: "4px",
+                                        background: "#ff4444",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "50%",
+                                        width: "20px",
+                                        height: "20px",
+                                        minWidth: "20px",
+                                        minHeight: "20px",
+                                        cursor: "pointer",
+                                        fontSize: "12px",
+                                        opacity: "0",
+                                        transition: "opacity 0.2s",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        lineHeight: "1",
+                                        padding: "0",
+                                    }}
+                                    title="Delete result"
+                                >
+                                    ×
+                                </button>
                                 <div
                                     ref={(el) => (resultRefs.current[i].title = el)}
                                     contentEditable

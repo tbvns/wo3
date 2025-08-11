@@ -117,6 +117,127 @@ export default function ComponentInsertModal({ onInsert, onClose }) {
                     </div>
                 </div>
             ),
+        },
+        {
+            id: "snapchat",
+            name: "Group Chat",
+            preview: (
+                <div style={{
+                    border: "1px solid #ddd",
+                    borderRadius: "8px",
+                    padding: "16px",
+                    background: "white",
+                    maxWidth: "300px",
+                    fontFamily: "Arial, sans-serif",
+                    fontSize: "13px"
+                }}>
+                    <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: "12px",
+                        paddingBottom: "8px",
+                        borderBottom: "1px solid #eee"
+                    }}>
+                        <div style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            background: "#ccc",
+                            marginRight: "8px"
+                        }} />
+                        <div>
+                            <strong>Group Chat</strong>
+                            <div style={{ fontSize: "11px", color: "#666" }}>3 members</div>
+                        </div>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "flex-end", gap: "6px", marginBottom: "8px" }}>
+                        <div style={{
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "50%",
+                            background: "#ccc"
+                        }} />
+                        <div style={{ position: "relative" }}>
+                            <div style={{
+                                background: "#FF6B6B",
+                                color: "#000",
+                                padding: "6px 10px",
+                                borderRadius: "12px 12px 12px 3px",
+                                fontSize: "12px"
+                            }}>
+                                <div style={{ fontSize: "9px", fontWeight: "600", marginBottom: "1px", opacity: 0.8 }}>
+                                    Alice
+                                </div>
+                                <div>Hey everyone! 👋</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "flex-end", gap: "6px" }}>
+                        <div style={{
+                            width: "24px",
+                            height: "24px",
+                            borderRadius: "50%",
+                            background: "#ccc"
+                        }} />
+                        <div style={{ position: "relative" }}>
+                            <div style={{
+                                background: "#4ECDC4",
+                                color: "#000",
+                                padding: "6px 10px",
+                                borderRadius: "12px 12px 12px 3px",
+                                fontSize: "12px"
+                            }}>
+                                <div style={{ fontSize: "9px", fontWeight: "600", marginBottom: "1px", opacity: 0.8 }}>
+                                    Bob
+                                </div>
+                                <div>What's up?</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        {
+            id: "newsWebsite",
+            name: "News Website",
+            preview: (
+                <div style={{
+                    width: "100%",
+                    background: "white",
+                    fontFamily: "Arial, sans-serif",
+                    color: "#0f1419",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    overflow: "hidden",
+                    maxWidth: "280px"
+                }}>
+                    <div style={{
+                        background: "#222",
+                        color: "#fff",
+                        padding: "8px 12px",
+                        fontWeight: "bold",
+                        fontSize: "14px"
+                    }}>
+                        My News Site
+                    </div>
+                    <div style={{ padding: "10px" }}>
+                        <h1 style={{
+                            fontSize: "16px",
+                            margin: "0 0 6px 0"
+                        }}>Breaking News Headline</h1>
+                        <h2 style={{
+                            fontSize: "12px",
+                            margin: "0 0 8px 0",
+                            color: "#555"
+                        }}>Subheadline goes here</h2>
+                        <p style={{
+                            fontSize: "11px",
+                            lineHeight: "1.4"
+                        }}>This is a short preview of the news article content...</p>
+                    </div>
+                </div>
+            )
         }
     ];
 

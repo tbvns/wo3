@@ -18,7 +18,18 @@ export const GoogleSearchExtension = Node.create({
                         description: "This is an example search result description.",
                     },
                 ],
-            },
+                parseHTML: element => {
+                    const attr = element.getAttribute("results");
+                    try {
+                        return attr ? JSON.parse(attr) : [];
+                    } catch {
+                        return [];
+                    }
+                },
+                renderHTML: attributes => {
+                    return { results: JSON.stringify(attributes.results || []) };
+                }
+            }
         };
     },
 
@@ -36,7 +47,7 @@ export const GoogleSearchExtension = Node.create({
             ["span", { class: "query" }, query],
         ];
 
-        const resultElements = results.map((r) => [
+        const resultElements = (results || []).map(r => [
             "div",
             { class: "google-search-result" },
             ["div", { class: "gs-title" }, r.title],
@@ -44,17 +55,10 @@ export const GoogleSearchExtension = Node.create({
             ["div", { class: "gs-description" }, r.description],
         ]);
 
-        const componentContent = [
-            "div",
-            { class: "google-search-component" },
-            searchBar,
-            ["div", {}, ...resultElements],
-        ];
-
         return [
             "div",
             mergeAttributes(HTMLAttributes, { class: "google-search-wrapper" }),
-            componentContent,
+            ["div", { class: "google-search-component" }, searchBar, ["div", {}, ...resultElements]],
         ];
     },
 

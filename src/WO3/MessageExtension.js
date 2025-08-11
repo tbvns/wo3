@@ -16,6 +16,17 @@ export const MessageExtension = Node.create({
                     { side: "left", text: "Hello!" },
                     { side: "right", text: "Hi there!" },
                 ],
+                parseHTML: (element) => {
+                    const attr = element.getAttribute("messages");
+                    try {
+                        return attr ? JSON.parse(attr) : [];
+                    } catch {
+                        return [];
+                    }
+                },
+                renderHTML: (attributes) => {
+                    return { messages: JSON.stringify(attributes.messages || []) };
+                },
             },
         };
     },
@@ -37,10 +48,14 @@ export const MessageExtension = Node.create({
             ["div", { class: "msg-name" }, name],
         ];
 
-        const messageElements = messages.map((m) => [
+        const messageElements = (messages || []).map((m) => [
             "div",
             { class: `msg-bubble-container ${m.side}` },
-            ["div", { class: "msg-bubble" }, ["div", { class: `msg-bubble-content ${m.side}` }, m.text]],
+            [
+                "div",
+                { class: "msg-bubble" },
+                ["div", { class: `msg-bubble-content ${m.side}` }, m.text],
+            ],
         ]);
 
         const componentContent = [

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -10,11 +10,14 @@ import TextAlign from "@tiptap/extension-text-align";
 import { ResizableImage } from "./ResizableImage";
 import GapCursor from "@tiptap/extension-gapcursor";
 import ComponentInsertModal from "./ComponentInsertModal";
+import WorkManager from "./WorkManager";
 
 import "./TiptapEditor.css";
 import { GoogleSearchExtension } from "./GoogleSearchExtension.jsx";
 import { TwitterPostExtension } from "./TwitterPostExtension.js";
 import { MessageExtension } from "./MessageExtension.js";
+import { SnapchatExtension } from "./SnapchatExtension.js";
+import { NewsWebsiteExtension } from "./NewsWebsiteExtension.js";
 
 const FontSize = TextStyle.extend({
     addAttributes() {
@@ -35,6 +38,9 @@ function buildBaseSkinCSS() {
     return `
 /* Base skin generated at export time */
 
+/* Override AO3 paragraphs margin */
+p {margin: 0px;}
+
 /* Buttons */
 .button-component-wrapper{display:inline-block;margin:5px;}
 .button-component{color:#fff;padding:8px 16px;border:0;border-radius:4px;
@@ -44,7 +50,7 @@ function buildBaseSkinCSS() {
 .btn-success{background:#28a745;}
 
 /* Center wrappers */
-.google-search-wrapper,.twitter-post-wrapper,.message-wrapper{
+.google-search-wrapper,.twitter-post-wrapper,.message-wrapper,.snapchat-wrapper,.news-website-wrapper{
   max-width:800px;margin:16px auto;
 }
 
@@ -91,8 +97,227 @@ function buildBaseSkinCSS() {
 .msg-bubble-content.right{background:#007bff;color:#fff;
   border-radius:18px 18px 5px 18px;}
 
+/* Group Chat (previously snapchat) */
+.snapchat-component{border:1px solid #ddd;border-radius:8px;padding:16px;background:#fff;font-family:Arial,sans-serif;line-height:1.3;color:#0f1419;}
+.sc-header{display:flex;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #eee;}
+.sc-group-icon{width:48px;height:48px;border-radius:50%;margin-right:12px;}
+.sc-group-name{font-weight:bold;font-size:18px;flex:1;}
+.sc-member-count{font-size:12px;color:#666;}
+.sc-messages{margin-top:16px;}
+.sc-messages>*+*{margin-top:16px;}
+.sc-message-container{margin-bottom:0;}
+.sc-message-name{font-size:12px;color:#666;font-weight:500;margin-bottom:4px;margin-left:40px;}
+.sc-message{display:flex;align-items:flex-end;}
+.sc-message>*+*{margin-left:8px;}
+.sc-msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;}
+.sc-msg-bubble{color:#000;padding:8px 12px;border-radius:18px 18px 18px 5px;word-wrap:break-word;position:relative;max-width:70%;}
+
+/* News Website Base */
+.news-website-wrapper {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  margin: 16px auto;
+  max-width: 800px;
+}
+
+.news-website-preview {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.news-topbar {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  position: relative;
+  margin: 0; /* Full width */
+}
+
+.news-content-area {
+  padding: 16px; /* Padding for content only */
+}
+
+.news-site-link,
+.news-site-name {
+  text-decoration: none;
+}
+
+.news-headline {
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+.news-subheadline {
+  margin: 0 0 20px 0;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.news-article-content {
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+/* Style 1 - Classic News */
+.style-1 .news-topbar {
+  border-bottom: 4px double;
+  font-family: 'Times New Roman', serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 18px;
+  padding: 12px 20px;
+}
+.style-1 .news-headline {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: bold;
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+.style-1 .news-subheadline {
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-style: italic;
+  border-left: 4px solid;
+  padding-left: 16px;
+  margin: 16px 0 24px 0;
+}
+.style-1 .news-article-content {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  line-height: 1.8;
+  text-align: justify;
+  column-gap: 30px;
+  margin-top: 24px;
+}
+
+/* Style 2 - Modern Tech */
+.style-2 .news-topbar {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 16px;
+  padding: 16px 20px;
+}
+.style-2 .news-headline {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 800;
+  font-size: 36px;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+}
+.style-2 .news-subheadline {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 300;
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-left: 4px solid;
+  margin: 16px 0 24px 0;
+  border-radius: 0 8px 8px 0;
+}
+.style-2 .news-article-content {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+/* Style 3 - Editorial */
+.style-3 .news-topbar {
+  border-bottom: 3px solid;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 22px;
+  font-style: italic;
+  position: relative;
+  padding: 12px 20px;
+}
+.style-3 .news-topbar::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+.style-3 .news-headline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 48px;
+  font-style: italic;
+  margin-bottom: 16px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+.style-3 .news-subheadline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
+  text-align: center;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  padding: 16px 0;
+  margin: 20px 0 28px 0;
+}
+.style-3 .news-article-content {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.8;
+  text-align: justify;
+  text-indent: 2em;
+}
+
+/* Style 4 - Minimalist */
+.style-4 .news-topbar {
+  border: none;
+  background: transparent;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 100;
+  font-size: 14px;
+  text-transform: lowercase;
+  letter-spacing: 4px;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid;
+}
+
+.style-4 .news-headline {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 100;
+  font-size: 54px;
+  text-align: center;
+  margin: 40px 0 20px 0;
+  letter-spacing: -2px;
+  line-height: 0.9;
+}
+
+.style-4 .news-subheadline {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 300;
+  text-align: center;
+  margin: 20px auto 40px auto;
+  max-width: 600px;
+  line-height: 1.4;
+}
+
+.style-4 .news-article-content {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.9;
+  max-width: 650px;
+  margin: 0 auto;
+  font-weight: 300;
+}
+
 /* Resizable image wrapper (width comes from dynamic classes) */
 .resizable-image-wrapper{line-height:0;margin:10px 0;}
+
 `.trim();
 }
 
@@ -157,6 +382,11 @@ function extractDynamicStylesAndClasses(html) {
     const buckets = {
         color: new Map(),
         "background-color": new Map(),
+        "border-color": new Map(),
+        "border-top-color": new Map(),
+        "border-right-color": new Map(),
+        "border-bottom-color": new Map(),
+        "border-left-color": new Map(),
         "font-size": new Map(),
         "text-align": new Map(),
         width: new Map(),
@@ -165,23 +395,37 @@ function extractDynamicStylesAndClasses(html) {
     const ensureRule = (prop, value) => {
         if (!value) return null;
         let key = value.trim();
-        if (prop === "color" || prop === "background-color") {
+
+        // Normalize colors
+        if (
+            prop === "color" ||
+            prop === "background-color" ||
+            prop.startsWith("border-") // includes all border color props
+        ) {
             const hex = toHexColor(value);
             if (!hex) return null;
             key = hex;
         }
+
         if (prop === "font-size") {
             const n = num(value);
             if (n == null) return null;
             key = `${Math.round(n)}px`;
         }
+
         if (prop === "width") {
             key = value.trim();
         }
-        if (!buckets[prop].has(key)) {
+
+        if (buckets[prop] && !buckets[prop].has(key)) {
             let cls = "";
             if (prop === "color") cls = `c-${key.replace("#", "")}`;
             if (prop === "background-color") cls = `bg-${key.replace("#", "")}`;
+            if (prop === "border-color") cls = `bc-${key.replace("#", "")}`;
+            if (prop === "border-top-color") cls = `btc-${key.replace("#", "")}`;
+            if (prop === "border-right-color") cls = `brc-${key.replace("#", "")}`;
+            if (prop === "border-bottom-color") cls = `bbc-${key.replace("#", "")}`;
+            if (prop === "border-left-color") cls = `blc-${key.replace("#", "")}`;
             if (prop === "font-size") cls = `fs-${key.replace("px", "")}`;
             if (prop === "text-align") cls = `ta-${key}`;
             if (prop === "width") {
@@ -193,7 +437,9 @@ function extractDynamicStylesAndClasses(html) {
             buckets[prop].set(key, cls);
             return cls;
         }
-        return buckets[prop].get(key);
+        if (buckets[prop]) {
+            return buckets[prop].get(key);
+        }
     };
 
     Array.from(doc.querySelectorAll("[style]")).forEach((el) => {
@@ -211,6 +457,7 @@ function extractDynamicStylesAndClasses(html) {
                 if (
                     prop === "color" ||
                     prop === "background-color" ||
+                    prop.startsWith("border-") ||
                     prop === "font-size" ||
                     prop === "text-align" ||
                     prop === "width"
@@ -229,6 +476,21 @@ function extractDynamicStylesAndClasses(html) {
     buckets.color.forEach((cls, key) => (css += `.${cls}{color:${key};}\n`));
     buckets["background-color"].forEach(
         (cls, key) => (css += `.${cls}{background-color:${key};}\n`)
+    );
+    buckets["border-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-color:${key} !important;border-style:solid !important;}\n`)
+    );
+    buckets["border-top-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-top-color:${key} !important;border-top-style:solid !important;}\n`)
+    );
+    buckets["border-right-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-right-color:${key} !important;border-right-style:solid !important;}\n`)
+    );
+    buckets["border-bottom-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-bottom-color:${key} !important;border-bottom-style:solid !important;}\n`)
+    );
+    buckets["border-left-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-left-color:${key} !important;border-left-style:solid !important;}\n`)
     );
     buckets["font-size"].forEach(
         (cls, key) => (css += `.${cls}{font-size:${key};}\n`)
@@ -257,6 +519,36 @@ function downloadFile(filename, content, mime) {
 
 export default function TiptapEditor() {
     const [showComponentModal, setShowComponentModal] = useState(false);
+    const [showWorkManager, setShowWorkManager] = useState(false);
+    const [currentWorkId, setCurrentWorkId] = useState(null);
+    const [workName, setWorkName] = useState('');
+    const [lastSaved, setLastSaved] = useState(null);
+    const autoSaveTimeoutRef = useRef(null);
+
+    const performAutoSave = useCallback((editorInstance, workId, name) => {
+        if (!editorInstance || !workId) return;
+
+        const content = editorInstance.getHTML();
+        const workData = {
+            id: workId,
+            name: name,
+            content,
+            updatedAt: new Date().toISOString()
+        };
+
+        // Save individual work content
+        localStorage.setItem(`tiptap-work-${workId}`, JSON.stringify(workData));
+
+        // Update works list
+        const savedWorks = JSON.parse(localStorage.getItem('tiptap-works') || '[]');
+        const workIndex = savedWorks.findIndex(w => w.id === workId);
+        if (workIndex >= 0) {
+            savedWorks[workIndex] = { ...savedWorks[workIndex], name: name, updatedAt: workData.updatedAt };
+            localStorage.setItem('tiptap-works', JSON.stringify(savedWorks));
+        }
+
+        setLastSaved(new Date());
+    }, []);
 
     const editor = useEditor({
         extensions: [
@@ -275,6 +567,8 @@ export default function TiptapEditor() {
             GoogleSearchExtension,
             TwitterPostExtension,
             MessageExtension,
+            SnapchatExtension,
+            NewsWebsiteExtension,
         ],
         editorProps: {
             attributes: {
@@ -283,7 +577,109 @@ export default function TiptapEditor() {
                     "outline:none;font-size:16px;line-height:1.6;padding:2rem;min-height:50vh;",
             },
         },
+        onUpdate: ({ editor: editorInstance }) => {
+            // Clear existing timeout
+            if (autoSaveTimeoutRef.current) {
+                clearTimeout(autoSaveTimeoutRef.current);
+            }
+
+            // Set new timeout for auto-save
+            autoSaveTimeoutRef.current = setTimeout(() => {
+                performAutoSave(editorInstance, currentWorkId, workName);
+            }, 500);
+        },
     });
+
+    useEffect(() => {
+        const savedWorks = JSON.parse(localStorage.getItem('tiptap-works') || '[]');
+        if (savedWorks.length > 0) {
+            const latestWork = savedWorks.reduce((latest, current) =>
+                new Date(current.updatedAt) > new Date(latest.updatedAt) ? current : latest
+            );
+            loadWork(latestWork.id, latestWork.name);
+        } else {
+            createDefaultWork();
+        }
+    }, []);
+
+    // Auto-save when workName changes
+    useEffect(() => {
+        if (editor && currentWorkId && workName) {
+            if (autoSaveTimeoutRef.current) {
+                clearTimeout(autoSaveTimeoutRef.current);
+            }
+            autoSaveTimeoutRef.current = setTimeout(() => {
+                performAutoSave(editor, currentWorkId, workName);
+            }, 500);
+        }
+    }, [workName, currentWorkId, editor, performAutoSave]);
+
+    const createDefaultWork = () => {
+        const defaultWork = {
+            id: Date.now().toString(),
+            name: 'Untitled Work',
+            content: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+
+        const savedWorks = JSON.parse(localStorage.getItem('tiptap-works') || '[]');
+        savedWorks.push(defaultWork);
+        localStorage.setItem('tiptap-works', JSON.stringify(savedWorks));
+
+        // Also save the empty work content
+        localStorage.setItem(`tiptap-work-${defaultWork.id}`, JSON.stringify(defaultWork));
+
+        setCurrentWorkId(defaultWork.id);
+        setWorkName(defaultWork.name);
+
+        // Clear the editor content
+        if (editor) {
+            editor.commands.setContent('');
+        }
+    };
+
+    const loadWork = (workId, name) => {
+        const workData = JSON.parse(localStorage.getItem(`tiptap-work-${workId}`) || '{}');
+
+        setCurrentWorkId(workId);
+        setWorkName(name);
+
+        if (editor) {
+            const content = workData.content || '';
+            editor.commands.setContent(content);
+        }
+
+        setLastSaved(workData.updatedAt ? new Date(workData.updatedAt) : null);
+    };
+
+    const saveToComputer = () => {
+        if (!editor) return;
+        const rawHTML = editor.getHTML();
+        const { html, css: dynamicCss } = extractDynamicStylesAndClasses(rawHTML);
+
+        const workData = {
+            name: workName,
+            content: rawHTML,
+            cleanedHtml: html,
+            css: `${buildBaseSkinCSS()}\n\n${dynamicCss}`.trim(),
+            createdAt: new Date().toISOString(),
+            version: "1.0"
+        };
+
+        downloadFile(`${workName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wo3`, JSON.stringify(workData, null, 2), "application/json");
+    };
+
+    const exportFiles = () => {
+        if (!editor) return;
+
+        const raw = editor.getHTML();
+        const { html, css: dynamicCss } = extractDynamicStylesAndClasses(raw);
+        const skin = `${buildBaseSkinCSS()}\n\n${dynamicCss}`.trim();
+
+        downloadFile("content.html", html, "text/html");
+        downloadFile("skin.css", skin, "text/css");
+    };
 
     if (!editor) return null;
 
@@ -302,82 +698,85 @@ export default function TiptapEditor() {
         setShowComponentModal(false);
     };
 
-    const exportFiles = () => {
-        const raw = editor.getHTML();
-        const { html, css: dynamicCss } = extractDynamicStylesAndClasses(raw);
-        const skin = `${buildBaseSkinCSS()}
-
-${dynamicCss}`.trim();
-
-        downloadFile("content.html", html, "text/html");
-        downloadFile("skin.css", skin, "text/css");
-    };
-
-    const toolbarButtonStyle = {
-        background: "#f0f0f0",
-        border: "none",
-        padding: "6px 10px",
-        borderRadius: "4px",
-        cursor: "pointer",
-        fontWeight: "bold",
-        fontSize: "14px",
-    };
-
     return (
-        <div
-            style={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column",
-                background: "#f5f5f5",
-            }}
-        >
+        <div className="editor-container">
+            {/* Header */}
+            <div className="editor-header">
+                <div className="header-left">
+                    <input
+                        type="text"
+                        value={workName}
+                        onChange={(e) => setWorkName(e.target.value)}
+                        className="work-name-input"
+                        placeholder="Work name..."
+                    />
+                    <button
+                        onClick={() => setShowWorkManager(true)}
+                        className="work-manager-btn"
+                    >
+                        📁 Manage Works
+                    </button>
+                    {lastSaved && (
+                        <span className="last-saved">
+                            Last saved: {lastSaved.toLocaleTimeString()}
+                        </span>
+                    )}
+                </div>
+                <div className="header-right">
+                    <button onClick={saveToComputer} className="save-computer-btn">
+                        💾 Save to Computer (.wo3)
+                    </button>
+                    <button onClick={exportFiles} className="export-btn">
+                        📥 Export HTML/CSS
+                    </button>
+                </div>
+            </div>
+
             {/* Toolbar */}
-            <div
-                style={{
-                    flexShrink: 0,
-                    display: "flex",
-                    gap: "5px",
-                    flexWrap: "wrap",
-                    background: "#f0f0f0",
-                    padding: "5px",
-                    justifyContent: "space-between",
-                    borderBottom: "1px solid #ddd",
-                }}
-            >
-                <div style={{ display: "flex", gap: "5px", flexWrap: "wrap" }}>
+            <div className="editor-toolbar">
+                <div className="toolbar-group">
                     <button
                         onClick={() => editor.chain().focus().toggleBold().run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive('bold') ? 'active' : ''}`}
                     >
-                        B
+                        <strong>B</strong>
+                    </button>
+                    <button
+                        onClick={() => editor.chain().focus().toggleUnderline().run()}
+                        className={`toolbar-btn ${editor.isActive('underline') ? 'active' : ''}`}
+                    >
+                        <u>U</u>
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleItalic().run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive('italic') ? 'active' : ''}`}
                     >
-                        I
+                        <em>I</em>
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleStrike().run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive('strike') ? 'active' : ''}`}
                     >
-                        S
+                        <s>S</s>
                     </button>
+                </div>
+
+                <div className="toolbar-group">
                     <button
                         onClick={() => editor.chain().focus().toggleBulletList().run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive('bulletList') ? 'active' : ''}`}
                     >
                         • List
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive('orderedList') ? 'active' : ''}`}
                     >
                         1. List
                     </button>
+                </div>
 
-                    {/* Link */}
+                <div className="toolbar-group">
                     <button
                         onClick={() => {
                             const isActive = editor.isActive("link");
@@ -389,58 +788,52 @@ ${dynamicCss}`.trim();
                             if (url)
                                 editor.chain().focus().setLink({ href: url }).run();
                         }}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive('link') ? 'active' : ''}`}
                     >
                         🔗 Link
                     </button>
-
-                    {/* Image and raw HTML */}
-                    <button onClick={addImage} style={toolbarButtonStyle}>
+                    <button onClick={addImage} className="toolbar-btn">
                         🖼 Image
                     </button>
-                    <button onClick={addHTML} style={toolbarButtonStyle}>
+                    <button onClick={addHTML} className="toolbar-btn">
                         💻 HTML
                     </button>
-
-                    {/* Insert Component */}
                     <button
                         onClick={() => setShowComponentModal(true)}
-                        style={toolbarButtonStyle}
+                        className="toolbar-btn component-btn"
                     >
-                        + Insert Component
+                        + Component
                     </button>
+                </div>
 
-                    {/* Alignment */}
+                <div className="toolbar-group">
                     <button
                         onClick={() => editor.chain().focus().setTextAlign("left").run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive({textAlign: 'left'}) ? 'active' : ''}`}
                     >
                         ⬅
                     </button>
                     <button
-                        onClick={() =>
-                            editor.chain().focus().setTextAlign("center").run()
-                        }
-                        style={toolbarButtonStyle}
+                        onClick={() => editor.chain().focus().setTextAlign("center").run()}
+                        className={`toolbar-btn ${editor.isActive({textAlign: 'center'}) ? 'active' : ''}`}
                     >
                         ⬍
                     </button>
                     <button
                         onClick={() => editor.chain().focus().setTextAlign("right").run()}
-                        style={toolbarButtonStyle}
+                        className={`toolbar-btn ${editor.isActive({textAlign: 'right'}) ? 'active' : ''}`}
                     >
                         ➡
                     </button>
                     <button
-                        onClick={() =>
-                            editor.chain().focus().setTextAlign("justify").run()
-                        }
-                        style={toolbarButtonStyle}
+                        onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+                        className={`toolbar-btn ${editor.isActive({textAlign: 'justify'}) ? 'active' : ''}`}
                     >
                         ☰
                     </button>
+                </div>
 
-                    {/* Heading selector */}
+                <div className="toolbar-group">
                     <select
                         className="toolbar-select"
                         onChange={(e) => {
@@ -448,13 +841,14 @@ ${dynamicCss}`.trim();
                             if (level === 0) {
                                 editor.chain().focus().setParagraph().run();
                             } else {
-                                editor
-                                    .chain()
-                                    .focus()
-                                    .toggleHeading({ level })
-                                    .run();
+                                editor.chain().focus().toggleHeading({ level }).run();
                             }
                         }}
+                        value={
+                            editor.isActive('heading', { level: 1 }) ? 1 :
+                                editor.isActive('heading', { level: 2 }) ? 2 :
+                                    editor.isActive('heading', { level: 3 }) ? 3 : 0
+                        }
                     >
                         <option value="0">Paragraph</option>
                         <option value="1">H1</option>
@@ -462,89 +856,55 @@ ${dynamicCss}`.trim();
                         <option value="3">H3</option>
                     </select>
 
-                    {/* Font size */}
                     <input
                         type="number"
                         min="8"
                         max="72"
                         defaultValue="16"
+                        className="toolbar-input"
                         onChange={(e) => {
                             const px = `${e.target.value}px`;
-                            editor
-                                .chain()
-                                .focus()
-                                .setMark("textStyle", { fontSize: px })
-                                .run();
+                            editor.chain().focus().setMark("textStyle", { fontSize: px }).run();
                         }}
-                        style={{ ...toolbarButtonStyle, width: "60px" }}
                     />
 
-                    {/* Text color */}
                     <input
                         type="color"
                         onChange={(e) => {
-                            editor
-                                .chain()
-                                .focus()
-                                .setColor(e.target.value)
-                                .run();
+                            editor.chain().focus().setColor(e.target.value).run();
                         }}
                         title="Text color"
-                        style={{ ...toolbarButtonStyle, padding: "4px 6px", width: 40 }}
+                        className="toolbar-color"
                     />
                     <button
                         onClick={() => editor.chain().focus().unsetColor().run()}
-                        style={toolbarButtonStyle}
+                        className="toolbar-btn"
                     >
                         ✖ Color
                     </button>
                 </div>
-
-                {/* Export button on the right */}
-                <button
-                    onClick={exportFiles}
-                    style={{
-                        ...toolbarButtonStyle,
-                        background: "#28a745",
-                        color: "white",
-                    }}
-                >
-                    📥 Export (content.html + skin.css)
-                </button>
             </div>
 
             {/* Editor area */}
-            <div
-                style={{
-                    flex: "1",
-                    background: "#f5f5f5",
-                    display: "flex",
-                    justifyContent: "center",
-                    padding: "20px",
-                    paddingBottom: "40px",
-                }}
-            >
-                <div
-                    style={{
-                        background: "white",
-                        maxWidth: "800px",
-                        minWidth: "300px",
-                        width: "100%",
-                        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-                        borderRadius: "4px",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}
-                >
+            <div className="editor-main">
+                <div className="editor-paper">
                     <EditorContent editor={editor} />
                 </div>
             </div>
 
-            {/* Component modal */}
+            {/* Modals */}
             {showComponentModal && (
                 <ComponentInsertModal
                     onInsert={insertComponent}
                     onClose={() => setShowComponentModal(false)}
+                />
+            )}
+
+            {showWorkManager && (
+                <WorkManager
+                    onSelectWork={loadWork}
+                    onClose={() => setShowWorkManager(false)}
+                    currentWorkId={currentWorkId}
                 />
             )}
         </div>
