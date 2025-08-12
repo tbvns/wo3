@@ -405,7 +405,7 @@ html, body {
     gap: 20px;
     padding: 20px;
     flex: 1;
-    overflow: hidden;
+    overflow: scroll;
     box-sizing: border-box;
 }
 
@@ -414,7 +414,7 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding-right: 4px;
 }
 
@@ -423,7 +423,7 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    overflow-y: auto;
+    overflow-y: scroll;
     padding-left: 4px;
 }
 
@@ -726,6 +726,7 @@ html, body {
         grid-template-columns: 1fr;
     }
 }
+
 /* Mobile adjustments */
 @media (max-width: 768px) {
     /* ===== Toolbar at bottom ===== */
