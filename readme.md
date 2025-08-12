@@ -1,6 +1,7 @@
-
-<p align="center" style="width: 400px">
-  <img src="https://github.com/tbvns/wo3/blob/main/public/wo3.svg" alt="WO3 Logo" width="600"/>
+<p align="center">
+  <img src="https://github.com/tbvns/wo3/blob/main/public/wo3.svg" 
+       alt="WO3 Logo" 
+       width="250"/>
 </p>
 
 <h1 align="center">WO3: The Ultimate AO3 HTML Editor</h1>
