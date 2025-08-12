@@ -11,19 +11,19 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
         if (queryRef.current && queryRef.current.innerText !== query) {
             queryRef.current.innerText = query;
         }
+
         results.forEach((res, i) => {
-            if (resultRefs.current[i]) {
-                if (resultRefs.current[i].title.innerText !== res.title) {
-                    resultRefs.current[i].title.innerText = res.title;
-                }
-                if (resultRefs.current[i].url.innerText !== res.url) {
-                    resultRefs.current[i].url.innerText = res.url;
-                }
-                if (
-                    resultRefs.current[i].description.innerText !== res.description
-                ) {
-                    resultRefs.current[i].description.innerText = res.description;
-                }
+            const refObj = resultRefs.current[i];
+            if (!refObj) return; // Skip if ref not ready
+
+            if (refObj.title && refObj.title.innerText !== res.title) {
+                refObj.title.innerText = res.title;
+            }
+            if (refObj.url && refObj.url.innerText !== res.url) {
+                refObj.url.innerText = res.url;
+            }
+            if (refObj.description && refObj.description.innerText !== res.description) {
+                refObj.description.innerText = res.description;
             }
         });
     }, [query, results]);
@@ -165,8 +165,10 @@ export const GoogleSearchComponent = ({ node, updateAttributes }) => {
                                     ×
                                 </button>
                                 <div
-                                    ref={(el) => (resultRefs.current[i].title = el)}
-                                    contentEditable
+                                    ref={(el) => {
+                                        if (!resultRefs.current[i]) resultRefs.current[i] = {};
+                                        resultRefs.current[i].title = el;
+                                    }}                                    contentEditable
                                     suppressContentEditableWarning
                                     style={{
                                         color: "#1a0dab",

@@ -1,5 +1,212 @@
 import React, { useRef, useEffect } from "react";
 import { NodeViewWrapper } from "@tiptap/react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Link from "@tiptap/extension-link";
+import { TextStyle } from "@tiptap/extension-text-style";
+import Color from "@tiptap/extension-color";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import { ResizableImage } from "./ResizableImage";
+
+const FontSize = TextStyle.extend({
+    addAttributes() {
+        return {
+            fontSize: {
+                default: null,
+                parseHTML: (el) => el.style.fontSize || null,
+                renderHTML: (attrs) => {
+                    if (!attrs.fontSize) return {};
+                    return { style: `font-size: ${attrs.fontSize}` };
+                },
+            },
+        };
+    },
+});
+
+function toHexColor(input) {
+    if (!input) return null;
+    const s = `${input}`.trim().toLowerCase();
+    if (s.startsWith("#")) {
+        return s.length === 4
+            ? `#${s[1]}${s[1]}${s[2]}${s[2]}${s[3]}${s[3]}`
+            : s;
+    }
+    const m = s.match(/rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+    if (!m) return null;
+    const r = (+m[1]).toString(16).padStart(2, "0");
+    const g = (+m[2]).toString(16).padStart(2, "0");
+    const b = (+m[3]).toString(16).padStart(2, "0");
+    return `#${r}${g}${b}`;
+}
+
+function num(val) {
+    const n = parseFloat(val);
+    return Number.isFinite(n) ? n : null;
+}
+
+function cleanParagraphs(doc) {
+    const ps = Array.from(doc.querySelectorAll("p"));
+    ps.forEach((p) => {
+        const hasText = (p.textContent || "").trim().length > 0;
+        const onlyBrs =
+            !hasText &&
+            Array.from(p.childNodes).every(
+                (n) =>
+                    (n.nodeType === 1 &&
+                        n.nodeName.toLowerCase() === "br") ||
+                    (n.nodeType === 3 && !n.textContent.trim())
+            );
+        if (onlyBrs) {
+            p.remove();
+            return;
+        }
+        if (!hasText) {
+            const wrapsBlocks = Array.from(p.children).some((el) =>
+                /^(div|img|ul|ol|table|blockquote|figure|iframe)$/.test(
+                    el.tagName.toLowerCase()
+                )
+            );
+            if (wrapsBlocks) {
+                while (p.firstChild) {
+                    p.parentNode.insertBefore(p.firstChild, p);
+                }
+                p.remove();
+            }
+        }
+    });
+}
+
+function extractDynamicStylesAndClasses(html) {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+
+    cleanParagraphs(doc);
+
+    const buckets = {
+        color: new Map(),
+        "background-color": new Map(),
+        "border-color": new Map(),
+        "border-top-color": new Map(),
+        "border-right-color": new Map(),
+        "border-bottom-color": new Map(),
+        "border-left-color": new Map(),
+        "font-size": new Map(),
+        "text-align": new Map(),
+        width: new Map(),
+    };
+
+    const ensureRule = (prop, value) => {
+        if (!value) return null;
+        let key = value.trim();
+
+        // Normalize colors
+        if (
+            prop === "color" ||
+            prop === "background-color" ||
+            prop.startsWith("border-")
+        ) {
+            const hex = toHexColor(value);
+            if (!hex) return null;
+            key = hex;
+        }
+
+        if (prop === "font-size") {
+            const n = num(value);
+            if (n == null) return null;
+            key = `${Math.round(n)}px`;
+        }
+
+        if (prop === "width") {
+            key = value.trim();
+        }
+
+        if (buckets[prop] && !buckets[prop].has(key)) {
+            let cls = "";
+            if (prop === "color") cls = `c-${key.replace("#", "")}`;
+            if (prop === "background-color") cls = `bg-${key.replace("#", "")}`;
+            if (prop === "border-color") cls = `bc-${key.replace("#", "")}`;
+            if (prop === "border-top-color") cls = `btc-${key.replace("#", "")}`;
+            if (prop === "border-right-color") cls = `brc-${key.replace("#", "")}`;
+            if (prop === "border-bottom-color") cls = `bbc-${key.replace("#", "")}`;
+            if (prop === "border-left-color") cls = `blc-${key.replace("#", "")}`;
+            if (prop === "font-size") cls = `fs-${key.replace("px", "")}`;
+            if (prop === "text-align") cls = `ta-${key}`;
+            if (prop === "width") {
+                const isPct = key.includes("%");
+                const n = num(key);
+                if (n == null) return null;
+                cls = `w-${isPct ? `${Math.round(n)}p` : `${Math.round(n)}`}`;
+            }
+            buckets[prop].set(key, cls);
+            return cls;
+        }
+        if (buckets[prop]) {
+            return buckets[prop].get(key);
+        }
+    };
+
+    Array.from(doc.querySelectorAll("[style]")).forEach((el) => {
+        const style = el.getAttribute("style") || "";
+        const keep = [];
+        style
+            .split(";")
+            .map((s) => s.trim())
+            .filter(Boolean)
+            .forEach((decl) => {
+                const i = decl.indexOf(":");
+                if (i === -1) return;
+                const prop = decl.slice(0, i).trim().toLowerCase();
+                const val = decl.slice(i + 1).trim();
+                if (
+                    prop === "color" ||
+                    prop === "background-color" ||
+                    prop.startsWith("border-") ||
+                    prop === "font-size" ||
+                    prop === "text-align" ||
+                    prop === "width"
+                ) {
+                    const cls = ensureRule(prop, val);
+                    if (cls) el.classList.add(cls);
+                } else {
+                    keep.push(decl);
+                }
+            });
+        if (keep.length) el.setAttribute("style", keep.join("; "));
+        else el.removeAttribute("style");
+    });
+
+    let css = "";
+    buckets.color.forEach((cls, key) => (css += `.${cls}{color:${key};}\n`));
+    buckets["background-color"].forEach(
+        (cls, key) => (css += `.${cls}{background-color:${key};}\n`)
+    );
+    buckets["border-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-color:${key} !important;border-style:solid !important;}\n`)
+    );
+    buckets["border-top-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-top-color:${key} !important;border-top-style:solid !important;}\n`)
+    );
+    buckets["border-right-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-right-color:${key} !important;border-right-style:solid !important;}\n`)
+    );
+    buckets["border-bottom-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-bottom-color:${key} !important;border-bottom-style:solid !important;}\n`)
+    );
+    buckets["border-left-color"].forEach(
+        (cls, key) => (css += `.${cls}{border-left-color:${key} !important;border-left-style:solid !important;}\n`)
+    );
+    buckets["font-size"].forEach(
+        (cls, key) => (css += `.${cls}{font-size:${key};}\n`)
+    );
+    buckets["text-align"].forEach(
+        (cls, key) => (css += `.${cls}{text-align:${key};}\n`)
+    );
+    buckets.width.forEach(
+        (cls, key) => (css += `.${cls}{width:${key};}\n`)
+    );
+
+    return { html: doc.body.innerHTML, css };
+}
 
 export const NewsWebsiteComponent = ({ node, updateAttributes }) => {
     const {
@@ -21,21 +228,37 @@ export const NewsWebsiteComponent = ({ node, updateAttributes }) => {
     const siteNameRef = useRef(null);
     const headlineRef = useRef(null);
     const subheadlineRef = useRef(null);
-    const contentRef = useRef(null);
+
+    const contentEditor = useEditor({
+        extensions: [
+            StarterKit,
+            Link,
+            ResizableImage.configure({ inline: false }),
+            TextStyle,
+            FontSize,
+            Color,
+            Underline,
+            TextAlign.configure({
+                types: ["heading", "paragraph", "resizableImage"],
+            }),
+        ],
+        content: content,
+        onUpdate: ({ editor }) => {
+            updateAttributes({ content: editor.getHTML() });
+        }
+    });
 
     useEffect(() => {
         if (siteNameRef.current) siteNameRef.current.innerText = siteName;
         if (headlineRef.current) headlineRef.current.innerText = headline;
         if (subheadlineRef.current) subheadlineRef.current.innerText = subheadline;
-        if (contentRef.current) contentRef.current.innerText = content;
     }, []);
 
     const handleBlur = () => {
         updateAttributes({
             siteName: siteNameRef.current.innerText,
             headline: headlineRef.current.innerText,
-            subheadline: subheadlineRef.current.innerText,
-            content: contentRef.current.innerText
+            subheadline: subheadlineRef.current.innerText
         });
     };
 
@@ -50,6 +273,48 @@ export const NewsWebsiteComponent = ({ node, updateAttributes }) => {
 
     const handleStyleChange = (e) => {
         updateAttributes({ styleVariant: parseInt(e.target.value, 10) });
+    };
+
+    const exportContent = () => {
+        if (!contentEditor) return;
+
+        const rawHTML = contentEditor.getHTML();
+        const { html: cleanedHtml, css: dynamicCss } = extractDynamicStylesAndClasses(rawHTML);
+
+        const exportData = {
+            siteName,
+            headline,
+            subheadline,
+            rawContent: rawHTML,
+            cleanedContent: cleanedHtml,
+            dynamicCSS: dynamicCss,
+            colors: {
+                primary: primaryColor || "#222",
+                secondary: secondaryColor || "#fff",
+                headline: headlineColor || "#000",
+                text: textColor || "#2c3e50",
+                muted: mutedColor || "#999",
+                border: borderColor || "#ddd",
+                accent: accentColor || "#4ecdc4"
+            },
+            styleVariant,
+            exportedAt: new Date().toISOString()
+        };
+
+        // Download as JSON
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${siteName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_content.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        navigator.clipboard.writeText(cleanedHtml).then(() => {
+            alert('Cleaned HTML copied to clipboard!');
+        });
     };
 
     const colors = {
@@ -290,7 +555,74 @@ export const NewsWebsiteComponent = ({ node, updateAttributes }) => {
                 <div style={{ padding: styleVariant === 4 ? "20px 0" : "20px" }}>
                     <h1 ref={headlineRef} contentEditable suppressContentEditableWarning onBlur={handleBlur} style={templateStyles[styleVariant].headline} />
                     <h2 ref={subheadlineRef} contentEditable suppressContentEditableWarning onBlur={handleBlur} style={templateStyles[styleVariant].subheadline} />
-                    <div ref={contentRef} contentEditable suppressContentEditableWarning onBlur={handleBlur} style={templateStyles[styleVariant].content} />
+
+                    {/* Rich text editor for article content */}
+                    {contentEditor && (
+                        <>
+                            <div style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                background: "#f1f3f5",
+                                border: "1px solid #ccc",
+                                borderRadius: "6px",
+                                padding: "4px 6px",
+                                marginBottom: "8px"
+                            }}>
+                                <button onClick={() => contentEditor.chain().focus().toggleBold().run()} style={{ fontWeight: "bold" }}>B</button>
+                                <button onClick={() => contentEditor.chain().focus().toggleItalic().run()} style={{ fontStyle: "italic" }}>I</button>
+                                <button onClick={() => contentEditor.chain().focus().toggleUnderline().run()} style={{ textDecoration: "underline" }}>U</button>
+                                <button onClick={() => contentEditor.chain().focus().setTextAlign("left").run()}>⬅</button>
+                                <button onClick={() => contentEditor.chain().focus().setTextAlign("center").run()}>⬍</button>
+                                <button onClick={() => contentEditor.chain().focus().setTextAlign("right").run()}>➡</button>
+                                <button onClick={() => contentEditor.chain().focus().setTextAlign("justify").run()}>☰</button>
+                                <select
+                                    onChange={(e) => {
+                                        if (e.target.value) {
+                                            contentEditor.chain().focus().setMark("textStyle", { fontSize: e.target.value }).run();
+                                        }
+                                    }}
+                                    defaultValue=""
+                                >
+                                    <option value="">Size</option>
+                                    {[12, 14, 16, 18, 20, 24, 28, 32].map(size => (
+                                        <option key={size} value={`${size}px`}>{size}px</option>
+                                    ))}
+                                </select>
+                                <input
+                                    type="color"
+                                    onChange={(e) => contentEditor.chain().focus().setColor(e.target.value).run()}
+                                    title="Text color"
+                                />
+                                <button onClick={() => {
+                                    const url = prompt("Image URL");
+                                    if (url) {
+                                        contentEditor.chain().focus().setImage({
+                                            src: url,
+                                            width: "50%"
+                                        }).run();
+                                    }
+                                }}>🖼</button>
+                                {/* ✅ NEW: Export button for content */}
+                                <button
+                                    onClick={exportContent}
+                                    style={{
+                                        background: "#28a745",
+                                        color: "white",
+                                        border: "none",
+                                        borderRadius: "4px",
+                                        padding: "4px 8px",
+                                        cursor: "pointer",
+                                        fontSize: "12px"
+                                    }}
+                                    title="Export content with cleaned CSS"
+                                >
+                                    📥 Export
+                                </button>
+                            </div>
+                            <EditorContent editor={contentEditor} style={templateStyles[styleVariant].content} />
+                        </>
+                    )}
                 </div>
 
                 {/* Controls */}
@@ -305,7 +637,7 @@ export const NewsWebsiteComponent = ({ node, updateAttributes }) => {
                                 <option value={4}>Minimalist</option>
                             </select>
                         </div>
-                        <div style={{ fontSize: "11px", color: "#6c757d", fontStyle: "italic" }}>Click elements to edit</div>
+                        <div style={{ fontSize: "11px", color: "#6c757d", fontStyle: "italic" }}>Click elements to edit • Use Export in toolbar for clean CSS</div>
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: "8px" }}>

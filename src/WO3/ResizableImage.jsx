@@ -1,41 +1,42 @@
 import { NodeViewWrapper, ReactNodeViewRenderer } from "@tiptap/react";
 import Image from "@tiptap/extension-image";
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 
 const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
     const { src, alt, title, width, textAlign } = node.attrs;
-    const [size, setSize] = React.useState(parseInt(width) || 100);
+
+    const initialRem = parseFloat(width) || 20; // default 20rem
+    const [size, setSize] = React.useState(initialRem);
     const wrapperRef = React.useRef(null);
-    const [toolbarPos, setToolbarPos] = React.useState({ top: 0, left: 0 });
 
     React.useEffect(() => {
-        setSize(parseInt(width) || 100);
+        setSize(parseFloat(width) || 20);
     }, [width]);
-
-    React.useEffect(() => {
-        if (selected && wrapperRef.current) {
-            const rect = wrapperRef.current.getBoundingClientRect();
-            setToolbarPos({
-                top: rect.top - 40,
-                left: rect.left + rect.width / 2,
-            });
-        }
-    }, [selected]);
 
     const handleSizeChange = (newSize) => {
         setSize(newSize);
-        updateAttributes({ width: `${newSize}%` });
+        updateAttributes({ width: `${newSize}rem` });
     };
 
     return (
-        <>
+        <NodeViewWrapper
+            as="div"
+            ref={wrapperRef}
+            className={`resizable-image-wrapper ${selected ? "ProseMirror-selectednode" : ""}`}
+            style={{
+                textAlign: textAlign || "left",
+                width: "100%",
+                position: "relative"
+            }}
+            data-text-align={textAlign || "left"}
+        >
             {selected && (
                 <div
                     contentEditable={false}
                     style={{
-                        position: "fixed",
-                        top: `${toolbarPos.top}px`,
-                        left: `${toolbarPos.left}px`,
+                        position: "absolute",
+                        top: "-40px",
+                        left: "50%",
                         transform: "translateX(-50%)",
                         background: "rgba(0,0,0,0.8)",
                         padding: "6px 10px",
@@ -43,7 +44,7 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
                         display: "flex",
                         alignItems: "center",
                         gap: "8px",
-                        zIndex: 9999,
+                        zIndex: 10,
                         color: "white",
                     }}
                     onMouseDown={(e) => e.stopPropagation()}
@@ -51,56 +52,42 @@ const ResizableImageComponent = ({ node, updateAttributes, selected }) => {
                 >
                     <input
                         type="range"
-                        min="10"
-                        max="100"
+                        min="5"
+                        max="50"
+                        step="0.5"
                         value={size}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                        onChange={(e) => handleSizeChange(parseInt(e.target.value))}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => handleSizeChange(parseFloat(e.target.value))}
+                        style={{ cursor: "pointer" }}
                     />
                     <input
                         type="number"
-                        min="10"
+                        min="5"
+                        max="50"
+                        step="0.5"
                         value={size}
-                        draggable={false}
-                        onDragStart={(e) => e.preventDefault()}
-                        onChange={(e) => handleSizeChange(parseInt(e.target.value))}
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => handleSizeChange(parseFloat(e.target.value))}
                         style={{
-                            width: "50px",
+                            width: "60px",
                             background: "transparent",
                             border: "1px solid white",
                             color: "white",
-                            textAlign: "center",
-                            userSelect: "none",
+                            textAlign: "center"
                         }}
                     />
-                    <span>%</span>
+                    <span>rem</span>
                 </div>
             )}
 
-            <NodeViewWrapper
-                as="div"
-                ref={wrapperRef}
-                className={`resizable-image-wrapper ${
-                    selected ? "ProseMirror-selectednode" : ""
-                }`}
-                style={{ textAlign }}
-            >
-                <img
-                    src={src}
-                    alt={alt}
-                    title={title}
-                    style={{ width }}
-                    className="resizable-image"
-                    draggable={false}
-                    onDragStart={(e) => e.preventDefault()}
-                />
-            </NodeViewWrapper>
-        </>
+            <img
+                src={src}
+                alt={alt}
+                title={title}
+                style={{ width, display: "inline-block" }}
+                className="resizable-image"
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
+            />
+        </NodeViewWrapper>
     );
 };
 

@@ -315,6 +315,28 @@ p {margin: 0px;}
   font-weight: 300;
 }
 
+/* Image alignment container */
+.image-align-container {
+  display: flex;
+  width: 100%;
+}
+
+.image-align-container.ta-left {
+  justify-content: flex-start;
+}
+
+.image-align-container.ta-center {
+  justify-content: center;
+}
+
+.image-align-container.ta-right {
+  justify-content: flex-end;
+}
+
+.image-align-container.ta-justify {
+  justify-content: space-between;
+}
+
 /* Resizable image wrapper (width comes from dynamic classes) */
 .resizable-image-wrapper{line-height:0;margin:10px 0;}
 
@@ -379,6 +401,68 @@ function extractDynamicStylesAndClasses(html) {
 
     cleanParagraphs(doc);
 
+    // Process news website components - decode and parse their content
+    const newsComponents = doc.querySelectorAll('.news-website-wrapper');
+    newsComponents.forEach(wrapper => {
+        const contentArea = wrapper.querySelector('.news-article-content');
+        if (contentArea) {
+            // Get the content attribute from the wrapper
+            const contentAttr = wrapper.getAttribute('content');
+            if (contentAttr) {
+                // Parse the HTML content and replace the text content
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = contentAttr;
+                contentArea.innerHTML = tempDiv.innerHTML;
+            }
+        }
+    });
+
+    // Process resizable image wrappers to ensure alignment is preserved
+    const imageWrappers = doc.querySelectorAll('.resizable-image-wrapper');
+    imageWrappers.forEach(wrapper => {
+        let textAlign = wrapper.getAttribute('data-text-align') || wrapper.style.textAlign || 'left';
+        textAlign = textAlign.trim().toLowerCase();
+
+        // Create a new container div
+        const container = doc.createElement('div');
+        container.classList.add('image-align-container', `ta-${textAlign}`);
+
+        // Insert container before wrapper and move wrapper inside it
+        wrapper.parentNode.insertBefore(container, wrapper);
+        container.appendChild(wrapper);
+
+        // Remove inline text-align from wrapper
+        wrapper.style.textAlign = '';
+        wrapper.removeAttribute('data-text-align');
+    });
+
+    // Wrap aligned images in a flex container so alignment works in exported HTML
+    const allImages = doc.querySelectorAll("img");
+    allImages.forEach(img => {
+        // Detect alignment from data attribute, style, or class
+        let textAlign =
+            img.getAttribute("data-text-align") ||
+            img.style.textAlign ||
+            Array.from(img.classList).find(c => c.startsWith("ta-"))?.replace("ta-", "") ||
+            null;
+
+        if (textAlign) {
+            textAlign = textAlign.trim().toLowerCase();
+
+            // Create container
+            const container = doc.createElement("div");
+            container.classList.add("image-align-container", `ta-${textAlign}`);
+
+            // Insert container before image and move image inside
+            img.parentNode.insertBefore(container, img);
+            container.appendChild(img);
+
+            // Remove inline text-align from image
+            img.style.textAlign = "";
+            img.removeAttribute("data-text-align");
+        }
+    });
+
     const buckets = {
         color: new Map(),
         "background-color": new Map(),
@@ -396,11 +480,10 @@ function extractDynamicStylesAndClasses(html) {
         if (!value) return null;
         let key = value.trim();
 
-        // Normalize colors
         if (
             prop === "color" ||
             prop === "background-color" ||
-            prop.startsWith("border-") // includes all border color props
+            prop.startsWith("border-")
         ) {
             const hex = toHexColor(value);
             if (!hex) return null;
@@ -442,6 +525,7 @@ function extractDynamicStylesAndClasses(html) {
         }
     };
 
+    // Process all elements with style attributes (now including the parsed news content)
     Array.from(doc.querySelectorAll("[style]")).forEach((el) => {
         const style = el.getAttribute("style") || "";
         const keep = [];
