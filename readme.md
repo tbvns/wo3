@@ -36,7 +36,7 @@ You can try WO3 instantly in your browser — no installation required.
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/wo3.git
+git clone https://github.com/tbvns/wo3.git
 cd wo3
 ```
 
