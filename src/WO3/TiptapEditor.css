@@ -726,3 +726,99 @@ html, body {
         grid-template-columns: 1fr;
     }
 }
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    /* ===== Toolbar at bottom ===== */
+    .editor-toolbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        background: white;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: none;
+        padding: 4px 6px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    /* Compact toolbar controls */
+    .toolbar-btn,
+    .toolbar-select,
+    .toolbar-input,
+    .toolbar-color {
+        flex: 0 0 auto;
+        height: 32px;
+        font-size: 12px;
+        padding: 0 6px;
+    }
+
+    /* Ensure editor content isn't hidden behind toolbar */
+    .editor-main {
+        padding-bottom: 80px; /* space for toolbar */
+    }
+
+    /* ===== Header adjustments ===== */
+    .editor-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .header-left,
+    .header-right {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    /* Center work name */
+    .work-name-input {
+        text-align: center;
+        width: 90%;
+    }
+
+    .header-left {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Shorter save/export buttons */
+    .save-computer-btn,
+    .export-btn {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    /* Change Save button text purely with CSS */
+    .save-computer-btn {
+        font-size: 0; /* hide original text */
+        position: relative;
+    }
+    .save-computer-btn::after {
+        content: "Save (.wo3)";
+        font-size: 14px; /* restore readable size */
+        color: white; /* match original text color */
+    }
+
+    /* ===== Work Manager modal scroll fix ===== */
+    .work-manager-modal {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    /* Stack columns in Work Manager */
+    .two-column {
+        grid-template-columns: 1fr;
+    }
+
+    /* Allow both columns to scroll if needed */
+    .left-column,
+    .right-column {
+        max-height: none;
+        overflow-y: visible;
+    }
+}

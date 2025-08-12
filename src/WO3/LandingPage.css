@@ -524,6 +524,7 @@
     gap: 0.5rem;
     font-weight: 600;
     transition: all 0.3s ease;
+    width: 100%;
 }
 
 .github-button:hover {
@@ -938,5 +939,113 @@
         position: relative;
         left: 0;
         transform: none;
+    }
+}
+
+.kofi-support-button {
+    position: fixed;
+    top: 2rem;
+    right: 2rem; /* opposite side from Back to Hub */
+    background: linear-gradient(135deg, #00E4ED 0%, #00b8c4 100%);
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 228, 237, 0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 228, 237, 0.3);
+}
+
+.kofi-support-button:hover {
+    background: linear-gradient(135deg, #00b8c4 0%, #009ca6 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 228, 237, 0.4);
+}
+
+/* Mobile adjustment so it doesn't overlap */
+@media (max-width: 768px) {
+    .kofi-support-button {
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+.support-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.kofi-support-inline {
+    background: linear-gradient(135deg, #00E4ED 0%, #00b8c4 100%);
+    color: white;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.kofi-support-inline:hover {
+    background: linear-gradient(135deg, #00b8c4 0%, #009ca6 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 228, 237, 0.4);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    /* Center the logo */
+    .logo-section {
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Make sure buttons don't overflow */
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .cta-button {
+        width: 100%;
+        max-width: 300px; /* keeps it from stretching too wide */
+        justify-content: center;
+    }
+
+    /* Hide scroll down indicator entirely */
+    .scroll-indicator {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Keep logo centered on very small screens */
+    .logo-section {
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Ensure button stays visible and centered */
+    .cta-button {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+
+    /* Hide scroll down indicator entirely */
+    .scroll-indicator {
+        display: none;
     }
 }

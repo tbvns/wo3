@@ -153,6 +153,16 @@ const LandingPage = ({ onGetStarted }) => {
                 ← Back to Hub
             </a>
 
+            {/* Ko-fi Support Button - Opposite Side */}
+            <a
+                href="https://ko-fi.com/tbvns"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="kofi-support-button"
+            >
+                ☕ Support Me
+            </a>
+
             {/* Hero Section */}
             <header className="hero">
                 <div className="hero-content">
@@ -346,16 +356,26 @@ const LandingPage = ({ onGetStarted }) => {
                             <div className="github-content">
                                 <h3>Support the Project</h3>
                                 <p>If WO3 helps you create amazing content, consider starring our repository!</p>
-                                <a
-                                    href="https://github.com/tbvns/wo3"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="github-button"
-                                >
-                                    <span className="github-icon">⭐</span>
-                                    Star on GitHub
-                                    <span className="github-arrow">→</span>
-                                </a>
+                                <div className="support-buttons">
+                                    <a
+                                        href="https://github.com/tbvns/wo3"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="github-button"
+                                    >
+                                        <span className="github-icon">⭐</span>
+                                        Star on GitHub
+                                        <span className="github-arrow">→</span>
+                                    </a>
+                                    <a
+                                        href="https://ko-fi.com/tbvns"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="kofi-support-inline"
+                                    >
+                                        ☕ Support Me on Ko‑fi →
+                                    </a>
+                                </div>
                                 <div className="github-stats">
                                     <div className="stat">
                                         <span className="stat-number">100%</span>
