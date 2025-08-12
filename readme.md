@@ -1,5 +1,5 @@
 
-<p align="center">
+<p align="center" style="width: 400px">
   <img src="https://github.com/tbvns/wo3/blob/main/public/wo3.svg" alt="WO3 Logo" width="600"/>
 </p>
 
