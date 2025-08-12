@@ -1,4 +1,3 @@
-// WorkManager.jsx
 import React, { useState, useEffect, useRef } from "react";
 
 const WorkManager = ({ onSelectWork, onClose, currentWorkId }) => {

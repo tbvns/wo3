@@ -209,7 +209,7 @@ export default function ComponentInsertModal({ onInsert, onClose }) {
                     color: "#0f1419",
                     border: "1px solid #ddd",
                     borderRadius: "4px",
-                    overflow: "hidden",
+                    overflow: "visible",
                     maxWidth: "280px"
                 }}>
                     <div style={{
@@ -242,25 +242,35 @@ export default function ComponentInsertModal({ onInsert, onClose }) {
     ];
 
     return (
-        <div style={{
-            position: "fixed",
-            top: 0,
-            right: 0,
-            width: "300px",
-            height: "100vh",
-            background: "#222",
-            color: "white",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            padding: "1rem",
-            boxShadow: "-2px 0 5px rgba(0, 0, 0, 0.5)",
-            zIndex: 1000,
-            overflowX: "hidden",
-            boxSizing: "border-box"
-        }}>
-            <h2 style={{ margin: "0 0 1rem 0", textAlign: "center" }}>
+        <div
+            style={{
+                position: "fixed",
+                top: 0,
+                right: 0,
+                width: "320px",
+                height: "100vh",
+                background: "linear-gradient(135deg, #F40439 0%, #F86182 100%)",
+                color: "white",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                padding: "1rem",
+                boxShadow: "-4px 0 15px rgba(244, 4, 57, 0.3)",
+                zIndex: 1000,
+                overflowX: "visible",
+                overflowY: "scroll",
+                boxSizing: "border-box",
+                borderTopLeftRadius: "12px",
+                borderBottomLeftRadius: "12px",
+            }}
+        >
+            <h2 style={{
+                margin: "0 0 1rem 0",
+                textAlign: "center",
+                fontWeight: "700",
+                fontSize: "1.2rem"
+            }}>
                 Select a Component
             </h2>
 
@@ -268,7 +278,9 @@ export default function ComponentInsertModal({ onInsert, onClose }) {
                 listStyle: "none",
                 padding: 0,
                 margin: 0,
-                width: "100%"
+                width: "100%",
+                overflow: "visible", // allow hover growth
+                flex: 1
             }}>
                 {components.map((component) => (
                     <li key={component.id} style={{ marginBottom: "1rem", width: "100%" }}>
@@ -285,17 +297,25 @@ export default function ComponentInsertModal({ onInsert, onClose }) {
                 onClick={onClose}
                 style={{
                     marginTop: "auto",
-                    background: "red",
+                    background: "white",
+                    color: "#F40439",
                     width: "100%",
-                    height: "2.5rem",
+                    height: "100px",
                     border: "none",
-                    borderRadius: "5px",
-                    color: "white",
+                    borderRadius: "8px",
+                    fontWeight: "600",
                     cursor: "pointer",
-                    transition: "background 0.3s ease"
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 2px 6px rgba(255,255,255,0.2)",
                 }}
-                onMouseEnter={(e) => e.target.style.background = "#ff4444"}
-                onMouseLeave={(e) => e.target.style.background = "red"}
+                onMouseEnter={(e) => {
+                    e.target.style.background = "#fce7ea";
+                    e.target.style.color = "#F40439";
+                }}
+                onMouseLeave={(e) => {
+                    e.target.style.background = "white";
+                    e.target.style.color = "#F40439";
+                }}
             >
                 Close
             </button>
