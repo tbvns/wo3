@@ -396,7 +396,7 @@ const LandingPage = ({ onGetStarted }) => {
             <section className="final-cta">
                 <div className="container">
                     <h2>Ready to Transform Your AO3 Stories?</h2>
-                    <p>Join thousands of writers who are already creating stunning HTML content with WO3</p>
+                    <p>Join writers who are already creating stunning HTML content with WO3</p>
                     <button onClick={onGetStarted} className="cta-button primary large">
                         🎯 Start Creating Now - It's Free!
                     </button>
