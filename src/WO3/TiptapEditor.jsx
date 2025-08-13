@@ -784,6 +784,8 @@ export default function TiptapEditor() {
 
     return (
         <div className="editor-container">
+            <title>{"WO3 - " + workName.trim()}</title>
+
             {/* Header */}
             <div className="editor-header">
                 <div className="header-left">
