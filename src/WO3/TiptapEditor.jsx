@@ -18,6 +18,10 @@ import { TwitterPostExtension } from "./TwitterPostExtension.js";
 import { MessageExtension } from "./MessageExtension.js";
 import { SnapchatExtension } from "./SnapchatExtension.js";
 import { NewsWebsiteExtension } from "./NewsWebsiteExtension.js";
+import {EmailExtension} from "./EmailExtension.jsx";
+import {InstagramPostExtension} from "./InstagramPostExtension.js";
+import ExportModal from "./ExportModal.jsx";
+import poisonHtml from "./poisoning.js";
 
 const FontSize = TextStyle.extend({
     addAttributes() {
@@ -39,7 +43,16 @@ function buildBaseSkinCSS() {
 /* Base skin generated at export time */
 
 /* Override AO3 paragraphs margin */
-p {margin: 0px;}
+p {
+  margin: 0px;
+}
+
+p h1 h2 h3 span {
+  word-wrap: normal !important;
+  word-break: normal !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+}
 
 /* Buttons */
 .button-component-wrapper{display:inline-block;margin:5px;}
@@ -67,19 +80,92 @@ p {margin: 0px;}
 .gs-description{color:#545454;font-size:14px;line-height:1.35;}
 
 /* Twitter Post */
-.twitter-post-component{border:1px solid #e1e8ed;border-radius:16px;padding:12px;
-  background:#fff;max-width:550px;margin:0 auto;font-family:Arial,sans-serif;
-  font-size:15px;line-height:1.35;color:#0f1419;}
-.tp-header{display:flex;align-items:center;margin-bottom:8px;}
-.tp-profile-img{width:48px;height:48px;border-radius:50%;margin-right:8px;}
-.tp-username{font-weight:bold;margin-right:4px;}
-.tp-handle{color:#536471;}
-.tp-text{margin:10px 0 8px 0;}
-.tp-timestamp{color:#536471;font-size:13px;margin-bottom:8px;}
-.tp-stats{display:flex;align-items:center;justify-content:center;color:#536471;
-  font-size:13px;}
-.tp-stats>span{margin-right:24px;}
-.tp-stats>span:last-child{margin-right:0;}
+.twitter-post-component {
+  border: 1px solid #e1e8ed;
+  border-radius: 16px;
+  padding: 12px;
+  background: #fff;
+  max-width: 550px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.35;
+  color: #0f1419;
+}
+
+.tp-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.tp-profile-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.tp-username {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.tp-handle {
+  color: #536471;
+}
+
+.tp-text {
+  margin: 10px 0 8px 0;
+}
+
+.tp-timestamp {
+  color: #536471;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.tp-action img.tp-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.tp-action.liked {
+  color: #f91880;
+}
+
+.tp-action.retweeted {
+  color: #00ba7c;
+}
+
+.tp-stats {
+  display: flex;
+  color: #536471;
+  font-size: 13px;
+  align-items: center;
+}
+
+.tp-stats > span {
+  margin-right: 24px;
+}
+
+.tp-stats > span:last-child {
+  margin-right: 0;
+}
+
+.tp-stats img.tp-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.tp-stats .liked {
+  color: #f91880;
+}
+
+.tp-stats .retweeted {
+  color: #00ba7c;
+}
 
 /* Message */
 .message-component{border:1px solid #ddd;border-radius:8px;padding:16px;
@@ -315,6 +401,343 @@ p {margin: 0px;}
   font-weight: 300;
 }
 
+/* Email */
+.email-wrapper {
+  background: #fff;
+  font-family: Arial, sans-serif;
+  color: #202124;
+}
+
+.email-wrapper.receive {
+  padding: 0 16px 16px 16px;
+}
+
+.eh-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0 8px 0;
+  border-bottom: 1px solid #e0e3e7;
+}
+
+.eh-subject {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.eh-actions {
+  display: flex;
+  color: #5f6368;
+}
+
+.eh-actions > * + * {
+  margin-left: 8px;
+}
+
+.eh-icon {
+  display: inline-block;
+}
+
+.em-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e0e3e7;
+}
+
+/* Avatar */
+.em-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  margin-right: 12px;
+}
+
+.em-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.em-from-row {
+  font-weight: 600;
+}
+
+.em-from-email {
+  color: #5f6368;
+  margin-left: 6px;
+}
+
+/* To row (secondary info) */
+.em-to-row {
+  color: #5f6368;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.em-time {
+  color: #5f6368;
+  font-size: 12px;
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+
+.email-body {
+  padding-top: 8px;
+  line-height: 1.6;
+}
+
+.email-wrapper.compose {
+  padding: 12px;
+}
+
+.email-compose-window {
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #404040;
+  color: #fff;
+  padding: 8px 12px;
+}
+
+.ec-title {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ec-window-actions {
+  display: flex;
+}
+
+.ec-window-actions > * + * {
+  margin-left: 6px;
+}
+
+.ec-icon {
+  display: inline-block;
+}
+
+.ec-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.ec-row > * + * {
+  margin-left: 8px;
+}
+
+.ec-label {
+  width: 72px;
+  color: #5f6368;
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+
+.ec-value {
+  flex: 1 1 auto;
+  min-height: 18px;
+}
+
+.ec-inline {
+  display: flex;
+}
+
+.ec-inline > * + * {
+  margin-left: 10px;
+}
+
+.ec-inline-link {
+  color: #1a73e8;
+  cursor: pointer;
+}
+
+.ec-body {
+  min-height: 120px;
+  padding: 12px;
+}
+
+.ec-actions {
+  display: flex;
+  padding: 10px 12px 12px 12px;
+}
+
+.ec-actions > * + * {
+  margin-left: 8px;
+}
+
+.ec-btn {
+  padding: 6px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 18px;
+  background: #fff;
+  display: inline-block;
+}
+
+.ec-btn.primary {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+}
+
+@media (max-width: 600px) {
+  .em-time {
+    width: 100%;
+    text-align: right;
+    margin-left: 0;
+    margin-top: 4px;
+  }
+}
+
+/* Instagram Post - AO3 Compatible */
+.instagram-post-wrapper {
+  max-width: 500px;
+  margin: 16px auto;
+}
+
+.instagram-post-component {
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  background: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: #262626;
+}
+
+.ig-header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #efefef;
+}
+
+.ig-profile-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.ig-user-info {
+  flex: 1;
+}
+
+.ig-username {
+  font-weight: 600;
+}
+
+.ig-location {
+  font-size: 12px;
+  color: #8e8e8e;
+}
+
+.ig-menu {
+  cursor: pointer;
+  padding: 8px;
+}
+
+.ig-image-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+.ig-post-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+
+.ig-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #8e8e8e;
+  text-align: center;
+}
+
+.ig-placeholder-icon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.ig-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px 8px;
+}
+
+.ig-action-buttons {
+  display: flex;
+}
+
+.ig-action-buttons > * {
+  margin-right: 16px;
+}
+
+.ig-action-buttons > *:last-child {
+  margin-right: 0;
+}
+
+.ig-icon {
+  cursor: pointer;
+  padding: 4px;
+}
+
+.ig-likes {
+  padding: 0 16px 8px;
+  font-weight: 600;
+}
+
+.ig-caption {
+  padding: 0 16px 8px;
+  line-height: 1.4;
+}
+
+.ig-caption-username {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.ig-comments {
+  padding: 0 16px 8px;
+}
+
+.ig-comment {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.ig-comment-username {
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.ig-timestamp {
+  padding: 0 16px 16px;
+  font-size: 10px;
+  color: #8e8e8e;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
 /* Image alignment container */
 .image-align-container {
   display: flex;
@@ -413,6 +836,20 @@ function extractDynamicStylesAndClasses(html) {
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = contentAttr;
                 contentArea.innerHTML = tempDiv.innerHTML;
+            }
+        }
+    });
+
+    //Email component manager
+    const emailComponents = doc.querySelectorAll('.email-wrapper');
+    emailComponents.forEach(wrapper => {
+        const bodyElement = wrapper.querySelector('.email-body, .ec-body');
+        if (bodyElement) {
+            // Get the body content from the wrapper's attribute
+            const bodyAttr = wrapper.getAttribute('body');
+            if (bodyAttr) {
+                // Set the HTML content directly
+                bodyElement.innerHTML = bodyAttr;
             }
         }
     });
@@ -608,6 +1045,9 @@ export default function TiptapEditor() {
     const [workName, setWorkName] = useState('');
     const [lastSaved, setLastSaved] = useState(null);
     const autoSaveTimeoutRef = useRef(null);
+    const [showExportModal, setShowExportModal] = useState(false);
+    const exportDataRef = useRef({ html: '', skin: '' });
+    const [protectionLevel, setProtectionLevel] = useState(0);
 
     const performAutoSave = useCallback((editorInstance, workId, name) => {
         if (!editorInstance || !workId) return;
@@ -653,12 +1093,14 @@ export default function TiptapEditor() {
             MessageExtension,
             SnapchatExtension,
             NewsWebsiteExtension,
+            EmailExtension,
+            InstagramPostExtension,
         ],
         editorProps: {
             attributes: {
                 class: "tiptap-editor-content",
                 style:
-                    "outline:none;font-size:16px;line-height:1.6;padding:2rem;min-height:50vh;",
+                    `outline:none;font-size:16px;line-height:1.6;padding:2rem;min-height:50vh;`,
             },
         },
         onUpdate: ({ editor: editorInstance }) => {
@@ -754,15 +1196,43 @@ export default function TiptapEditor() {
         downloadFile(`${workName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.wo3`, JSON.stringify(workData, null, 2), "application/json");
     };
 
-    const exportFiles = () => {
+    const exportFiles = async () => {
         if (!editor) return;
 
-        const raw = editor.getHTML();
-        const { html, css: dynamicCss } = extractDynamicStylesAndClasses(raw);
+        let raw = editor.getHTML();
+
+        if (protectionLevel > 0) {
+            try {
+                raw = await poisonHtml(raw, protectionLevel);
+            } catch (error) {
+                console.error("Failed to apply AI protection:", error);
+                alert("Failed to apply AI protection. Exporting without protection.");
+            }
+        }
+
+        const {html, css: dynamicCss} = extractDynamicStylesAndClasses(raw);
         const skin = `${buildBaseSkinCSS()}\n\n${dynamicCss}`.trim();
 
-        downloadFile("content.html", html, "text/html");
-        downloadFile("skin.css", skin, "text/css");
+        // Store export data
+        exportDataRef.current = {html, skin};
+
+        // Show export modal
+        setShowExportModal(true);
+    };
+
+    const copyContentToClipboard = () => {
+        navigator.clipboard.writeText(exportDataRef.current.html);
+        alert("Content copied to clipboard!");
+    };
+
+    const copyStylesToClipboard = () => {
+        navigator.clipboard.writeText(exportDataRef.current.skin);
+        alert("Workskin copied to clipboard!");
+    };
+
+    const downloadExportFiles = () => {
+        downloadFile("content.html", exportDataRef.current.html, "text/html");
+        downloadFile("skin.css", exportDataRef.current.skin, "text/css");
     };
 
     if (!editor) return null;
@@ -813,7 +1283,7 @@ export default function TiptapEditor() {
                         💾 Save to Computer (.wo3)
                     </button>
                     <button onClick={exportFiles} className="export-btn">
-                        📥 Export HTML/CSS
+                        📥 Export
                     </button>
                 </div>
             </div>
@@ -991,6 +1461,17 @@ export default function TiptapEditor() {
                     onSelectWork={loadWork}
                     onClose={() => setShowWorkManager(false)}
                     currentWorkId={currentWorkId}
+                />
+            )}
+
+            {showExportModal && (
+                <ExportModal
+                    onClose={() => setShowExportModal(false)}
+                    onCopyContent={copyContentToClipboard}
+                    onCopyStyles={copyStylesToClipboard}
+                    onDownload={downloadExportFiles}
+                    onExport={exportFiles}
+                    setLevel={setProtectionLevel}
                 />
             )}
         </div>

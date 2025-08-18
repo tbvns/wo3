@@ -238,6 +238,89 @@ export default function ComponentInsertModal({ onInsert, onClose }) {
                     </div>
                 </div>
             )
+        },
+        {
+            id: "email",
+            name: "Email",
+            preview: (
+                <div
+                    style={{
+                        border: "1px solid #e0e3e7",
+                        borderRadius: "8px",
+                        padding: "8px",
+                        background: "white",
+                        maxWidth: "300px",
+                        fontFamily: "Arial, sans-serif",
+                        fontSize: "13px",
+                        color: "#202124",
+                    }}
+                >
+                    <div style={{ fontWeight: 600, marginBottom: 4 }}>
+                        Re: Project Update
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div
+                            style={{
+                                width: 24,
+                                height: 24,
+                                borderRadius: "50%",
+                                background: "#ccc",
+                            }}
+                        />
+                        <div style={{ color: "#5f6368" }}>Jane Smith • Aug 16, 2025</div>
+                    </div>
+                    <div style={{ marginTop: 8, color: "#3c4043" }}>
+                        Hi there, sharing the latest updates...
+                    </div>
+                </div>
+            ),
+        },
+        {
+            id: "instagramPost",
+            name: "Instagram Post",
+            preview: (
+                <div style={{
+                    border: "1px solid #dbdbdb",
+                    borderRadius: "8px",
+                    padding: "12px",
+                    background: "white",
+                    maxWidth: "300px",
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    fontSize: "14px"
+                }}>
+                    <div style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
+                        <div style={{
+                            width: "32px",
+                            height: "32px",
+                            borderRadius: "50%",
+                            background: "#ccc",
+                            marginRight: "8px"
+                        }} />
+                        <div>
+                            <strong>johndoe</strong>
+                            <div style={{ fontSize: "12px", color: "#8e8e8e" }}>Location</div>
+                        </div>
+                    </div>
+                    <div style={{
+                        width: "100%",
+                        height: "200px",
+                        background: "#f5f5f5",
+                        borderRadius: "4px",
+                        marginBottom: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#8e8e8e"
+                    }}>
+                        📷
+                    </div>
+                    <div style={{ fontSize: "12px" }}>
+                        <strong>42 likes</strong><br />
+                        <strong>johndoe</strong> Beautiful sunset! 🌅<br />
+                        <span style={{ color: "#8e8e8e" }}>View all 5 comments</span>
+                    </div>
+                </div>
+            )
         }
     ];
 

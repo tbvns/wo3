@@ -603,7 +603,6 @@ export const NewsWebsiteComponent = ({ node, updateAttributes }) => {
                                         }).run();
                                     }
                                 }}>🖼</button>
-                                {/* ✅ NEW: Export button for content */}
                                 <button
                                     onClick={exportContent}
                                     style={{

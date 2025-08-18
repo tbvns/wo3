@@ -1,4 +1,3 @@
-/* LandingPage.css */
 .landing-page {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     line-height: 1.6;
@@ -53,7 +52,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     align-items: center;
-    margin-top: -2rem; /* Center the content better */
+    margin-top: -2rem;
 }
 
 .logo-section {

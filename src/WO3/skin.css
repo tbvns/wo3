@@ -17,7 +17,7 @@
     text-align: justify;
 }
 
-/* Button (inline) */
+/* Button */
 .button-component-wrapper {
     display: inline-block;
     margin: 5px;
@@ -41,7 +41,7 @@
     background: #28a745;
 }
 
-/* Wrappers (center block components without flex) */
+/* Wrappers */
 .google-search-wrapper,
 .twitter-post-wrapper,
 .message-wrapper {

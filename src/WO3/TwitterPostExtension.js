@@ -17,6 +17,8 @@ export const TwitterPostExtension = Node.create({
             retweets: { default: "5" },
             replies: { default: "2" },
             profileImageSrc: { default: "" },
+            liked: { default: false },
+            retweeted: { default: false },
         };
     },
 
@@ -34,6 +36,8 @@ export const TwitterPostExtension = Node.create({
             retweets,
             replies,
             profileImageSrc,
+            liked,
+            retweeted,
         } = node.attrs;
 
         const imageUrl =
@@ -57,12 +61,53 @@ export const TwitterPostExtension = Node.create({
 
         const tweetText = ["div", { class: "tp-text" }, text];
         const timestampDiv = ["div", { class: "tp-timestamp" }, timestamp];
+
         const stats = [
             "div",
             { class: "tp-stats" },
-            ["span", {}, `${replies} Replies`],
-            ["span", {}, `${retweets} Retweets`],
-            ["span", {}, `${likes} Likes`],
+            [
+                "span",
+                {},
+                [
+                    "img",
+                    {
+                        src: "https://wo3.tbvns.xyz/images/twt-comments.png",
+                        class: "tp-icon",
+                        alt: "Replies",
+                    },
+                ],
+                ` ${replies}`,
+            ],
+            [
+                "span",
+                { class: retweeted ? "retweeted" : "" },
+                [
+                    "img",
+                    {
+                        src: retweeted
+                            ? "https://wo3.tbvns.xyz/images/twt-retweeted.png"
+                            : "https://wo3.tbvns.xyz/images/twt-retweet.png",
+                        class: "tp-icon",
+                        alt: "Retweets",
+                    },
+                ],
+                ` ${retweets}`,
+            ],
+            [
+                "span",
+                { class: liked ? "liked" : "" },
+                [
+                    "img",
+                    {
+                        src: liked
+                            ? "https://wo3.tbvns.xyz/images/twt-liked.png"
+                            : "https://wo3.tbvns.xyz/images/twt-like.png",
+                        class: "tp-icon",
+                        alt: "Likes",
+                    },
+                ],
+                ` ${likes}`,
+            ],
         ];
 
         const componentContent = [

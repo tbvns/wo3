@@ -823,3 +823,17 @@ html, body {
         overflow-y: visible;
     }
 }
+
+.tiptap-editor-content [contenteditable]:not(.tiptap)[data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: #9aa0a6;
+    pointer-events: none;
+}
+
+.tiptap-editor-content [contenteditable]:not(.tiptap):focus {
+    background-color: #fef5f6;
+}
+
+.tiptap-editor-content [contenteditable]:not(.tiptap):not([class*="tiptap"]) {
+    border: 2px solid rgba(248, 97, 130, 0.05);
+}
