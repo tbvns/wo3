@@ -1116,31 +1116,7 @@ export default function TiptapEditor() {
         },
     });
 
-    useEffect(() => {
-        const savedWorks = JSON.parse(localStorage.getItem('tiptap-works') || '[]');
-        if (savedWorks.length > 0) {
-            const latestWork = savedWorks.reduce((latest, current) =>
-                new Date(current.updatedAt) > new Date(latest.updatedAt) ? current : latest
-            );
-            loadWork(latestWork.id, latestWork.name);
-        } else {
-            createDefaultWork();
-        }
-    }, []);
-
-    // Auto-save when workName changes
-    useEffect(() => {
-        if (editor && currentWorkId && workName) {
-            if (autoSaveTimeoutRef.current) {
-                clearTimeout(autoSaveTimeoutRef.current);
-            }
-            autoSaveTimeoutRef.current = setTimeout(() => {
-                performAutoSave(editor, currentWorkId, workName);
-            }, 500);
-        }
-    }, [workName, currentWorkId, editor, performAutoSave]);
-
-    const createDefaultWork = () => {
+    const createDefaultWork = useCallback(() => {
         const defaultWork = {
             id: Date.now().toString(),
             name: 'Untitled Work',
@@ -1163,9 +1139,9 @@ export default function TiptapEditor() {
         if (editor) {
             editor.commands.setContent('');
         }
-    };
+    }, [editor]);
 
-    const loadWork = (workId, name) => {
+    const loadWork = useCallback((workId, name) => {
         const workData = JSON.parse(localStorage.getItem(`tiptap-work-${workId}`) || '{}');
 
         setCurrentWorkId(workId);
@@ -1177,7 +1153,31 @@ export default function TiptapEditor() {
         }
 
         setLastSaved(workData.updatedAt ? new Date(workData.updatedAt) : null);
-    };
+    }, [editor]);
+
+    useEffect(() => {
+        const savedWorks = JSON.parse(localStorage.getItem('tiptap-works') || '[]');
+        if (savedWorks.length > 0) {
+            const latestWork = savedWorks.reduce((latest, current) =>
+                new Date(current.updatedAt) > new Date(latest.updatedAt) ? current : latest
+            );
+            loadWork(latestWork.id, latestWork.name);
+        } else {
+            createDefaultWork();
+        }
+    }, [createDefaultWork, loadWork]);
+
+    // Auto-save when workName changes
+    useEffect(() => {
+        if (editor && currentWorkId && workName) {
+            if (autoSaveTimeoutRef.current) {
+                clearTimeout(autoSaveTimeoutRef.current);
+            }
+            autoSaveTimeoutRef.current = setTimeout(() => {
+                performAutoSave(editor, currentWorkId, workName);
+            }, 500);
+        }
+    }, [workName, currentWorkId, editor, performAutoSave]);
 
     const saveToComputer = () => {
         if (!editor) return;
@@ -1255,6 +1255,10 @@ export default function TiptapEditor() {
     return (
         <div className="editor-container">
             <title>{"WO3 - " + workName.trim()}</title>
+
+            <div className="top-links">
+                <a href="/">&larr; Back to Landing Page</a>
+            </div>
 
             {/* Header */}
             <div className="editor-header">

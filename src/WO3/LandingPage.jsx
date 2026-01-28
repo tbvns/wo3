@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './LandingPage.css';
 
-const LandingPage = ({ onGetStarted }) => {
+const LandingPage = () => {
     const [currentExample, setCurrentExample] = useState(0);
     const [currentFeature, setCurrentFeature] = useState(0);
 
@@ -175,9 +175,7 @@ const LandingPage = ({ onGetStarted }) => {
                                 Social media mockups, chat conversations, news articles, and more - all with a simple, intuitive editor.
                             </p>
                             <div className="hero-buttons">
-                                <button onClick={onGetStarted} className="cta-button primary">
-                                    🚀 Start Creating Now
-                                </button>
+                                <a href="/write" className="cta-button primary">🚀 Start Creating Now</a>
                                 <a
                                     href="https://github.com/tbvns/wo3"
                                     target="_blank"
@@ -397,9 +395,7 @@ const LandingPage = ({ onGetStarted }) => {
                 <div className="container">
                     <h2>Ready to Transform Your AO3 Stories?</h2>
                     <p>Join writers who are already creating stunning HTML content with WO3</p>
-                    <button onClick={onGetStarted} className="cta-button primary large">
-                        🎯 Start Creating Now - It's Free!
-                    </button>
+                    <a href="/write" className="cta-button primary large">🎯 Start Creating Now - It's Free!</a>
                     <div className="cta-benefits">
                         <span>✅ No registration</span>
                         <span>✅ Instant access</span>

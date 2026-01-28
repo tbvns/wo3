@@ -31,3 +31,50 @@ html, body {
 .startScreen button:hover {
   box-shadow: 0px 0px 20px white;
 }
+
+.root {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar-select {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #4a5568;
+    min-width: 120px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%234a5568' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 28px;
+}
+
+.toolbar-select:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+.top-links {
+    margin: 10px;
+    display: inline-block;
+}
+
+.top-links a {
+    font-size: 14px;
+    color: #555;
+    text-decoration: none;
+    margin-right: 15px;
+}
+
+.top-links a:hover {
+    text-decoration: underline;
+}
