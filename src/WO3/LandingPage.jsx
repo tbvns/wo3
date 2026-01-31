@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './LandingPage.css';
+import {useNavigate} from "react-router-dom";
 
 const LandingPage = () => {
     const [currentExample, setCurrentExample] = useState(0);
     const [currentFeature, setCurrentFeature] = useState(0);
+    const navigate = useNavigate();
 
     const examples = [
         {
@@ -175,7 +177,7 @@ const LandingPage = () => {
                                 Social media mockups, chat conversations, news articles, and more - all with a simple, intuitive editor.
                             </p>
                             <div className="hero-buttons">
-                                <a href="/write" className="cta-button primary">🚀 Start Creating Now</a>
+                                <a onClick={() => {navigate("/write")}} className="cta-button primary">🚀 Start Creating Now</a>
                                 <a
                                     href="https://github.com/tbvns/wo3"
                                     target="_blank"

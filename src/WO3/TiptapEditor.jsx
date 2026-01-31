@@ -22,6 +22,7 @@ import {EmailExtension} from "./EmailExtension.jsx";
 import {InstagramPostExtension} from "./InstagramPostExtension.js";
 import ExportModal from "./ExportModal.jsx";
 import poisonHtml from "./poisoning.js";
+import {useNavigate} from "react-router-dom";
 
 const FontSize = TextStyle.extend({
     addAttributes() {
@@ -1048,6 +1049,7 @@ export default function TiptapEditor() {
     const [showExportModal, setShowExportModal] = useState(false);
     const exportDataRef = useRef({ html: '', skin: '' });
     const [protectionLevel, setProtectionLevel] = useState(0);
+    const navigate = useNavigate();
 
     const performAutoSave = useCallback((editorInstance, workId, name) => {
         if (!editorInstance || !workId) return;
@@ -1258,11 +1260,11 @@ export default function TiptapEditor() {
             {/* Header */}
             <div className="editor-header">
                 <div className="header-left">
-                    <a href="/">
-                        <span className="material-symbols-outlined home-button">
-                            close
-                        </span>
-                    </a>
+                    <span onClick={() => {
+                        navigate("/")
+                    }} className="material-symbols-outlined home-button">
+                        close
+                    </span>
                     <input
                         type="text"
                         value={workName}
