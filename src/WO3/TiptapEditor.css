@@ -98,6 +98,16 @@ html, body {
     gap: 12px;
 }
 
+.home-button {
+    color: black;
+    transition-duration: 0.5s;
+}
+
+.home-button:hover {
+    color: #F40439;
+    scale: 120%;
+}
+
 .work-name-input {
     font-size: 18px;
     font-weight: 600;
@@ -548,7 +558,7 @@ html, body {
     transition: all 0.2s;
 }
 .create-btn:hover {
-    background: linear-gradient(135df, #2f855a 0%, #38a169 100%);
+    background: linear-gradient(135deg, #2f855a 0%, #38a169 100%);
     transform: translateY(-1px);
 }
 .cancel-btn {
