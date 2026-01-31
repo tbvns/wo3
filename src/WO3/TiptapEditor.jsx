@@ -1255,14 +1255,14 @@ export default function TiptapEditor() {
     return (
         <div className="editor-container">
             <title>{"WO3 - " + workName.trim()}</title>
-
-            <div className="top-links">
-                <a href="/">&larr; Back to Landing Page</a>
-            </div>
-
             {/* Header */}
             <div className="editor-header">
                 <div className="header-left">
+                    <a href="/">
+                        <span className="material-symbols-outlined home-button">
+                            close
+                        </span>
+                    </a>
                     <input
                         type="text"
                         value={workName}
